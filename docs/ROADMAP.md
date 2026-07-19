@@ -1,0 +1,154 @@
+# Lumora — Roadmap
+
+| Field | Value |
+|---|---|
+| Status | Active source of truth |
+| Related | [PROJECT.md](./PROJECT.md) · [MVP.md](./MVP.md) · [TASKS.md](./TASKS.md) · [PROGRESS.md](./PROGRESS.md) · [DECISIONS.md](./DECISIONS.md) |
+
+---
+
+## 1. Purpose
+
+This document sequences Lumora delivery from documentation and MVP through post-MVP expansion. Dates are intentionally omitted until a schedule is decided.
+
+---
+
+## 2. North Star
+
+**Scan. Analyze. Transform.**
+
+Build a trusted personal styling pipeline: guided capture → analysis → personalized recommendations → lasting history — then expand into broader style domains.
+
+---
+
+## 3. Phases
+
+```mermaid
+flowchart LR
+  P0[Phase 0: Docs & Foundations] --> P1[Phase 1: MVP]
+  P1 --> P2[Phase 2: Style Expansion]
+  P2 --> P3[Phase 3: Wardrobe & Shopping]
+  P3 --> P4[Phase 4: Immersive & Conversational]
+```
+
+---
+
+## 4. Phase 0 — Documentation & Foundations
+
+| Goal | Outcome |
+|---|---|
+| Product clarity | Lumora identity and MVP locked in docs |
+| Architecture clarity | NestJS-mediated AI boundaries documented |
+| Delivery clarity | Tasks/progress tracking established |
+
+**Exit criteria**
+
+- [x] Core docs set created under `docs/`
+- [ ] Open critical decisions recorded as they are made (auth, landmark payload, AI model approach)
+- [ ] Team/agents follow `.cursor/agent.md`
+
+---
+
+## 5. Phase 1 — MVP
+
+**Scope:** see [MVP.md](./MVP.md)
+
+| Capability | Phase 1 |
+|---|---|
+| Authentication | Yes |
+| Guided Face Scan | Yes |
+| MediaPipe Face Landmarks | Yes |
+| Face Shape Detection | Yes |
+| Hair Recommendation | Yes |
+| Recommendation History | Yes |
+
+**Exit criteria**
+
+- [ ] End-to-end authenticated scan → analysis → hair recommendations works
+- [ ] History persists and is user-scoped
+- [ ] Frontend never calls FastAPI
+- [ ] MVP acceptance checklist complete
+
+---
+
+## 6. Phase 2 — Style Expansion
+
+Extend recommendation domains using the same architecture.
+
+| Feature | Notes |
+|---|---|
+| Glasses recommendation | New recommendation category behind NestJS → AI |
+| Beard recommendation | Same pattern |
+| Color analysis | May require additional inputs/features |
+
+**Exit criteria (phase-level)**
+
+- [ ] At least one new recommendation category shipped with history support
+- [ ] No new client→AI path introduced
+
+---
+
+## 7. Phase 3 — Wardrobe & Shopping
+
+| Feature | Notes |
+|---|---|
+| Outfit recommendation | New domain + data model |
+| Wardrobe | User-owned items; NestJS + MongoDB |
+| Shopping | Product discovery / affiliate / catalog — model TBD |
+
+**Exit criteria (phase-level)**
+
+- [ ] Wardrobe CRUD (or equivalent) available to authenticated users
+- [ ] Outfit recommendations integrate with existing face/style profile where relevant
+
+---
+
+## 8. Phase 4 — Immersive & Conversational
+
+| Feature | Notes |
+|---|---|
+| Virtual try-on | New pipeline; still NestJS-mediated |
+| Chat | Conversational styling assistant domain |
+
+**Exit criteria (phase-level)**
+
+- [ ] Try-on or chat reaches usable beta without breaking MVP trust boundaries
+
+---
+
+## 9. Cross-Cutting Work (All Phases)
+
+| Track | Examples |
+|---|---|
+| Security | Auth hardening, AI service auth, data retention |
+| Reliability | Timeouts, observability, error budgets (as decided) |
+| Model quality | Improve face shape / recommendation relevance |
+| Platform | Monorepo tooling decisions, CI, deployment topology |
+
+These do not override MVP scope gates.
+
+---
+
+## 10. Explicit Non-Roadmap for Now
+
+Unless decided otherwise, do not prioritize:
+
+- Becoming an AI image generator product
+- Public AI API for third parties
+- Unscoped “platform rewrite” before MVP works
+
+---
+
+## 11. Planning Rules
+
+| Rule | Detail |
+|---|---|
+| MVP first | Phase 2+ does not start as a substitute for unfinished MVP |
+| Decision logging | Phase transitions that change architecture update [DECISIONS.md](./DECISIONS.md) |
+| No silent scope creep | New feature ideas go to roadmap/decisions, not silently into MVP tasks |
+
+---
+
+## 12. Summary
+
+Lumora ships in layers: **docs → MVP hair pipeline → expanded style recommendations → wardrobe/shopping → try-on/chat**, always preserving NestJS-mediated AI architecture.
