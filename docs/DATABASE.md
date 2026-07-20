@@ -99,6 +99,7 @@ Supports MVP auth (ADR-009): email/password and Google OAuth only.
 | `providers` | array\<object\> | Yes | Linked identities, e.g. `{ type: "google", subject: "..." }` |
 | `displayName` | string | No | Optional profile label |
 | `locale` | string | No | Preferred UI locale: `en` \| `ko` \| `uz` |
+| `plan` | string enum | **Post-MVP** | `FREE` \| `PRO` (ADR-022). **Not in MVP.** Default `FREE` when monetization ships. Guests are **not** users — no `GUEST` value here. |
 | `createdAt` | datetime | Yes | |
 | `updatedAt` | datetime | Yes | |
 
@@ -117,6 +118,7 @@ Supports MVP auth (ADR-009): email/password and Google OAuth only.
 | Unique sparse | `email` | Email login |
 | Unique compound | `providers.type` + `providers.subject` | Google account linking |
 | | `createdAt` | Ops / support queries |
+| | `plan` | Post-MVP entitlement queries |
 
 ### 5.2 `face_analyses`
 
@@ -249,7 +251,17 @@ Hairstyle catalog is **not** a MongoDB collection in MVP — it is **static JSON
 | Outfit | `outfits` |
 | Shopping | `products`, `orders` (if first-party) |
 | Chat | `conversations`, `messages` |
-| Monetization (ADR-022) | `credit_wallets`, `credit_transactions`, `subscriptions` |
+| Monetization (ADR-022) | `users.plan` (`FREE` \| `PRO`); `credit_wallets`, `credit_transactions`, `subscriptions` |
+
+**Access tiers vs user plan (do not confuse):**
+
+| Value | Persisted on `users`? | Meaning |
+|---|---|---|
+| `GUEST` | **No** | Unauthenticated; ephemeral session only |
+| `FREE` | Yes (`plan`) | Registered account with monthly credits |
+| `PRO` | Yes (`plan`) | Active Pro subscription |
+
+Do **not** use `UserType = GUEST | USER | PRO_USER`. See [MONETIZATION.md](./MONETIZATION.md) §8.1.
 
 These must not appear as MVP blockers. Monetization model: [MONETIZATION.md](./MONETIZATION.md).
 

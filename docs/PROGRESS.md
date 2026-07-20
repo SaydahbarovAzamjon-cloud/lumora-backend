@@ -63,6 +63,7 @@ User finalized MVP decisions. Docs updated to:
 - Decisions made: **ADR-022** freemium + unified credit wallet
 - Updated: README index, PROJECT, MVP, ROADMAP (Phase 2b), TASKS, DECISIONS opens OPEN-018…020
 - Note: Monetization remains **post-MVP**; guest “selfie upload” wording reconciled to landmarks-only (ADR-011)
+- Clarified schema: **Guest ≠ User**; accounts use `plan: FREE | PRO` (not `UserType = GUEST|USER|PRO`)
 
 ---
 

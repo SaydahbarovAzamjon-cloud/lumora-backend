@@ -247,15 +247,61 @@ Unlock Lumora Pro
 
 These are design targets for post-MVP implementation — not MVP requirements.
 
+### 8.1 Access model (important)
+
+**Guest is not a `User` row.** Guests are unauthenticated. Do **not** model `UserType = GUEST | USER | PRO`.
+
+| Concept | Where it lives | Values |
+|---|---|---|
+| **AccessTier** (runtime) | Derived by NestJS from auth + plan | `GUEST` \| `FREE` \| `PRO` |
+| **UserPlan** (persisted) | On authenticated `users` document | `FREE` \| `PRO` |
+
+```text
+No JWT / no account     → AccessTier.GUEST
+Signed in, plan=FREE    → AccessTier.FREE
+Signed in, plan=PRO     → AccessTier.PRO  (active subscription)
+```
+
+```graphql
+# Post-MVP GraphQL (logical contract)
+enum UserPlan {
+  FREE
+  PRO
+}
+
+enum AccessTier {
+  GUEST
+  FREE
+  PRO
+}
+
+type User {
+  id: ID!
+  email: String
+  displayName: String
+  plan: UserPlan!          # FREE by default after register
+  creditsRemaining: Int    # null/omit for PRO (unlimited)
+  createdAt: DateTime!
+}
+```
+
+| Wrong | Right |
+|---|---|
+| `enum UserType { GUEST USER PRO_USER }` on User | `plan: UserPlan` on User; Guest has **no** User |
+| Storing guest as a fake user | Ephemeral guest session id + rate limits |
+| Client-sent `plan` | NestJS derives entitlements from DB + subscription |
+
+### 8.2 Other expectations
+
 | Area | Expectation |
 |---|---|
-| Access control | NestJS enforces Guest / Free / Pro before calling FastAPI |
+| Access control | NestJS resolves `AccessTier` before calling FastAPI |
 | Credits | Server-side ledger; never trust client-reported balance |
 | Guest session | Ephemeral guest id / device session for one preview |
 | Idempotency | Debit credits only after successful generation (or clear refund rules) |
-| Pro entitlements | Subscription status drives unlimited + Makeover |
-| Paywalls | Frontend renders copy from Section 6; backend returns structured lock reasons |
-| Data model | Future collections: `credit_wallets`, `credit_transactions`, `subscriptions` (see [DATABASE.md](./DATABASE.md) future notes) |
+| Pro entitlements | Active `subscriptions` row → `plan=PRO` / unlimited |
+| Paywalls | Frontend renders copy from Section 6; backend returns structured lock reasons (`GUEST_LIMIT`, `CREDITS_EXHAUSTED`, `PRO_REQUIRED`) |
+| Data model | `users.plan`, `credit_wallets`, `credit_transactions`, `subscriptions` (see [DATABASE.md](./DATABASE.md)) |
 
 Hard rule unchanged: **Frontend never calls FastAPI** (ADR-004). Monetization gates live in NestJS.
 
@@ -269,6 +315,7 @@ Hard rule unchanged: **Frontend never calls FastAPI** (ADR-004). Monetization ga
 |---|---|
 | Freemium funnel Guest → Free → Pro | Accepted (ADR-022) |
 | Unified monthly credit system for Free | Accepted |
+| `UserPlan` = `FREE` \| `PRO` on accounts; Guest ≠ User row | Accepted |
 | Complete Makeover = Pro-only flagship | Accepted |
 | Benefit-led paywall messaging | Accepted |
 | Credit costs for future features | Accepted pattern |

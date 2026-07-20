@@ -86,7 +86,14 @@ type User {
   email: String
   displayName: String
   createdAt: DateTime!
+  # Post-MVP (ADR-022 / MONETIZATION.md) — not required for MVP:
+  # plan: UserPlan!
+  # creditsRemaining: Int
 }
+
+# Post-MVP monetization enums (not required for MVP schema):
+# enum UserPlan { FREE PRO }
+# enum AccessTier { GUEST FREE PRO }  # runtime only; GUEST is never on User
 
 type RecommendationItem {
   key: String
@@ -118,6 +125,8 @@ type AuthPayload {
 ```
 
 > Exact `FaceShape` enum values are product/AI decisions and may be adjusted when the AI taxonomy is finalized in [AI.md](./AI.md) / [DECISIONS.md](./DECISIONS.md).
+
+> **Monetization note:** Guest is not a GraphQL `User`. Authenticated users get `plan: FREE | PRO` when Phase 2b ships. See [MONETIZATION.md](./MONETIZATION.md) §8.1.
 
 ### 3.4 Suggested queries
 

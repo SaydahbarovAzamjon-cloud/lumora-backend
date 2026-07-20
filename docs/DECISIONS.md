@@ -322,6 +322,7 @@ Future versions may add time-based retention policies.
 - Monetization is **post-MVP** (does not expand ADR-007)
 - NestJS owns entitlement + credit debit before FastAPI calls
 - Guest preview uses the **landmarks-only** pipeline (ADR-011) — no selfie upload
+- **Do not** model `UserType = GUEST | USER | PRO`. Guest is unauthenticated (no `users` row). Authenticated accounts use `plan: FREE | PRO`; NestJS derives runtime `AccessTier` (`GUEST` \| `FREE` \| `PRO`)
 - Credit costs and paywall copy live in [MONETIZATION.md](./MONETIZATION.md)
 - New AI features add a credit cost row; Pro exclusivity only when explicitly decided
 
