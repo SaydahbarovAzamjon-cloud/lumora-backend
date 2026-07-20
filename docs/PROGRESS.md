@@ -37,6 +37,7 @@ Track what has been completed, what is in progress, and what is blocked. Update 
 - Wired `ConfigModule`, `MongooseModule`, `GraphQLModule` (Apollo) in `AppModule`
 - Added `.env.example` with `MONGODB_URI` and future auth/AI placeholders
 - Documented implementation mapping in `DATABASE.md` §10 and `API.md` §9
+- Added dedicated `docs/ER_MODELING.md` (ER diagram + relationships + entity tables)
 - Stub Query/Mutation resolvers throw until T-101 / T-105 / T-106
 
 ### 2026-07-19 — Documentation foundation

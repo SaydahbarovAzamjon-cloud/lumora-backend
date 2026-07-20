@@ -31,6 +31,7 @@ Agent rules: [`../.cursor/agent.md`](../.cursor/agent.md)
 | [MONOREPO.md](./MONOREPO.md) | Monorepo package ownership and boundaries |
 | [MVP.md](./MVP.md) | MVP capabilities and acceptance criteria |
 | [DATABASE.md](./DATABASE.md) | MongoDB logical data model |
+| [ER_MODELING.md](./ER_MODELING.md) | MVP ER diagram + entity/relationship map |
 | [API.md](./API.md) | GraphQL public API + internal FastAPI contract |
 | [AI.md](./AI.md) | FastAPI AI service responsibilities |
 | [SECURITY.md](./SECURITY.md) | Trust boundaries, authz, data protection |
@@ -75,6 +76,7 @@ docs/
 ├── MONOREPO.md
 ├── MVP.md
 ├── DATABASE.md               ← logical model + NestJS/Mongoose mapping (§10)
+├── ER_MODELING.md            ← ER diagram (entities + relationships)
 ├── API.md                    ← GraphQL/FastAPI contracts + NestJS mapping (§9)
 ├── AI.md
 ├── SECURITY.md

@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Scope | MongoDB models + GraphQL SDL foundation |
-| Related | [DATABASE.md](./DATABASE.md) · [API.md](./API.md) · [DECISIONS.md](./DECISIONS.md) · [TASKS.md](./TASKS.md) |
+| Related | [DATABASE.md](./DATABASE.md) · [API.md](./API.md) · [ER_MODELING.md](./ER_MODELING.md) · [DECISIONS.md](./DECISIONS.md) · [TASKS.md](./TASKS.md) |
 | Outcome | **Pass with noted opens** — safe to proceed to Auth (T-101) |
 
 ---

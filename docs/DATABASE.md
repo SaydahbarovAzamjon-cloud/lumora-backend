@@ -5,7 +5,7 @@
 | Status | Active source of truth (logical model) |
 | Store | MongoDB |
 | Owner | NestJS GraphQL backend |
-| Related | [ARCHITECTURE.md](./ARCHITECTURE.md) · [API.md](./API.md) · [MVP.md](./MVP.md) · [SECURITY.md](./SECURITY.md) · [DECISIONS.md](./DECISIONS.md) |
+| Related | [ARCHITECTURE.md](./ARCHITECTURE.md) · [API.md](./API.md) · [ER_MODELING.md](./ER_MODELING.md) · [MVP.md](./MVP.md) · [SECURITY.md](./SECURITY.md) · [DECISIONS.md](./DECISIONS.md) |
 
 ---
 
@@ -49,6 +49,8 @@ MongoDB
 ---
 
 ## 4. Entity Relationship (Logical)
+
+Full ER modeling (diagram + ASCII map + entity tables + lifecycle): **[ER_MODELING.md](./ER_MODELING.md)**.
 
 ```mermaid
 erDiagram
