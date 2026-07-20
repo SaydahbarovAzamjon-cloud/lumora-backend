@@ -103,6 +103,8 @@ Introduce the conversion funnel without changing NestJS-mediated AI boundaries.
 | Free monthly credits (10) | Unified credit wallet; server-side debit |
 | Credit costs per action | Hair/glasses/beard/hat/palette = 1; outfit = 2 |
 | Lumora Pro subscription | Unlimited credits + HD / no watermark / priority |
+| **Mock payment checkout** | Pricing → mock card → OTP → Pro; [PAYMENTS.md](./PAYMENTS.md) · ADR-023 |
+| **Shared VerificationService** | Payment + password reset OTP; [VERIFICATION.md](./VERIFICATION.md) · ADR-024 |
 | AI Complete Makeover | Pro-only flagship (requires multi-category support) |
 | Benefit-led paywalls | Guest→Free and Free→Pro copy from MONETIZATION.md |
 
@@ -111,6 +113,8 @@ Introduce the conversion funnel without changing NestJS-mediated AI boundaries.
 - [ ] NestJS enforces Guest / Free / Pro before FastAPI calls
 - [ ] Free users receive and spend monthly credits correctly
 - [ ] Credits = 0 surfaces Pro paywall with benefit list
+- [ ] Mock checkout activates Pro + invoice + admin Telegram (no real PSP)
+- [ ] VerificationService shared by payment and password reset
 - [ ] Complete Makeover is Pro-exclusive when the feature ships
 
 ---

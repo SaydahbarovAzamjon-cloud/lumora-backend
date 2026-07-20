@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Status | Accepted product strategy (post-MVP) |
-| Related | [PROJECT.md](./PROJECT.md) · [MVP.md](./MVP.md) · [ROADMAP.md](./ROADMAP.md) · [DECISIONS.md](./DECISIONS.md) · [DATABASE.md](./DATABASE.md) · [API.md](./API.md) |
+| Related | [PROJECT.md](./PROJECT.md) · [MVP.md](./MVP.md) · [ROADMAP.md](./ROADMAP.md) · [PAYMENTS.md](./PAYMENTS.md) · [VERIFICATION.md](./VERIFICATION.md) · [DECISIONS.md](./DECISIONS.md) · [DATABASE.md](./DATABASE.md) · [API.md](./API.md) |
 | ADR | ADR-022 |
 
 ---
@@ -301,7 +301,9 @@ type User {
 | Idempotency | Debit credits only after successful generation (or clear refund rules) |
 | Pro entitlements | Active `subscriptions` row → `plan=PRO` / unlimited |
 | Paywalls | Frontend renders copy from Section 6; backend returns structured lock reasons (`GUEST_LIMIT`, `CREDITS_EXHAUSTED`, `PRO_REQUIRED`) |
-| Data model | `users.plan`, `credit_wallets`, `credit_transactions`, `subscriptions` (see [DATABASE.md](./DATABASE.md)) |
+| Data model | `users.plan`, `credit_wallets`, `credit_transactions`, `subscriptions`, `payments`, `invoices`, `verification_challenges` (see [DATABASE.md](./DATABASE.md)) |
+| Checkout | Mock payment workflow — [PAYMENTS.md](./PAYMENTS.md) · ADR-023 |
+| OTP | Shared VerificationService — [VERIFICATION.md](./VERIFICATION.md) · ADR-024 |
 
 Hard rule unchanged: **Frontend never calls FastAPI** (ADR-004). Monetization gates live in NestJS.
 

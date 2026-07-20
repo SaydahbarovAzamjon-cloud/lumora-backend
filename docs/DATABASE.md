@@ -251,7 +251,7 @@ Hairstyle catalog is **not** a MongoDB collection in MVP — it is **static JSON
 | Outfit | `outfits` |
 | Shopping | `products`, `orders` (if first-party) |
 | Chat | `conversations`, `messages` |
-| Monetization (ADR-022) | `users.plan` (`FREE` \| `PRO`); `credit_wallets`, `credit_transactions`, `subscriptions` |
+| Monetization (ADR-022…024) | `users.plan` (`FREE` \| `PRO`); `payments`, `subscriptions`, `invoices`, `credit_wallets`, `credit_transactions`, `verification_challenges` |
 
 **Access tiers vs user plan (do not confuse):**
 
@@ -262,6 +262,8 @@ Hairstyle catalog is **not** a MongoDB collection in MVP — it is **static JSON
 | `PRO` | Yes (`plan`) | Active Pro subscription |
 
 Do **not** use `UserType = GUEST | USER | PRO_USER`. See [MONETIZATION.md](./MONETIZATION.md) §8.1.
+
+Payment status machine and OTP rules: [PAYMENTS.md](./PAYMENTS.md), [VERIFICATION.md](./VERIFICATION.md).
 
 These must not appear as MVP blockers. Monetization model: [MONETIZATION.md](./MONETIZATION.md).
 

@@ -38,6 +38,8 @@ Executable backlog for Lumora. Tasks are grouped by phase and surface. This is a
 | T-016 | Write `.cursor/agent.md` | done | |
 | T-017 | Resolve remaining opens (OPEN-004, 010, 014, 015, 017) as needed | todo | See DECISIONS.md |
 | T-018 | Write `docs/MONETIZATION.md` + ADR-022 | done | Guest → Free → Pro |
+| T-019 | Write `docs/PAYMENTS.md` + ADR-023 | done | Mock checkout |
+| T-020 | Write `docs/VERIFICATION.md` + ADR-024 | done | Shared OTP + password reset |
 
 ---
 
@@ -104,13 +106,18 @@ Do not pull these into Phase 1 unless scope is explicitly changed via ADR:
 | T-213 | Lumora Pro subscription + Pro paywall | 2b |
 | T-214 | AI Complete Makeover (Pro-only) | 2b |
 | T-215 | HD export / watermark rules by tier | 2b |
+| T-216 | MockPaymentProvider + checkout GraphQL | 2b |
+| T-217 | SubscriptionService + InvoiceService | 2b |
+| T-218 | VerificationService (shared OTP) | 2b |
+| T-219 | Forgot password + session invalidation | 2b |
+| T-220 | Admin Telegram notifications (payment + password reset) | 2b |
 | T-300 | Outfit recommendation | 3 |
 | T-301 | Wardrobe | 3 |
 | T-302 | Shopping | 3 |
 | T-400 | Virtual try-on | 4 |
 | T-401 | Chat | 4 |
 
-Monetization details: [MONETIZATION.md](./MONETIZATION.md) · ADR-022. Billing provider still open (OPEN-018).
+Monetization details: [MONETIZATION.md](./MONETIZATION.md) · [PAYMENTS.md](./PAYMENTS.md) · [VERIFICATION.md](./VERIFICATION.md) · ADR-022…024. Pricing amounts still open (OPEN-018).
 
 ---
 

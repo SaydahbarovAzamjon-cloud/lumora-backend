@@ -86,6 +86,7 @@ These are **out of scope for MVP**:
 - Chat
 - Color analysis
 - Guest → Free credits → Lumora Pro monetization ([`docs/MONETIZATION.md`](./docs/MONETIZATION.md))
+- Mock Pro checkout + shared OTP / password recovery ([`docs/PAYMENTS.md`](./docs/PAYMENTS.md), [`docs/VERIFICATION.md`](./docs/VERIFICATION.md))
 
 See [`docs/ROADMAP.md`](./docs/ROADMAP.md).
 
@@ -124,6 +125,8 @@ docs/
 ├── DEVELOPMENT_RULES.md
 ├── ROADMAP.md
 ├── MONETIZATION.md
+├── PAYMENTS.md
+├── VERIFICATION.md
 ├── DECISIONS.md
 ├── TASKS.md
 ├── PROGRESS.md

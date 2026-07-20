@@ -65,6 +65,13 @@ User finalized MVP decisions. Docs updated to:
 - Note: Monetization remains **post-MVP**; guest “selfie upload” wording reconciled to landmarks-only (ADR-011)
 - Clarified schema: **Guest ≠ User**; accounts use `plan: FREE | PRO` (not `UserType = GUEST|USER|PRO`)
 
+### 2026-07-20 — Mock payments + shared verification documented
+
+- Completed: `docs/PAYMENTS.md` (ADR-023), `docs/VERIFICATION.md` (ADR-024)
+- Mock checkout: pricing → card → OTP → Pro → invoice → admin Telegram
+- Shared OTP for payment + password reset; password policy + session kill
+- Opens: OPEN-021 (Google-only reset UX), OPEN-022 (admin Telegram ops)
+
 ---
 
 ## 4. In Progress

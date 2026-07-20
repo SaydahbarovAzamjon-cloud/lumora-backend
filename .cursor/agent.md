@@ -97,6 +97,8 @@ When changing contracts or boundaries, update the matching docs in the same chan
 |---|---|
 | Product scope | `PROJECT.md`, `MVP.md`, `ROADMAP.md`, `MONETIZATION.md`, `DECISIONS.md` |
 | Access tiers / credits / Pro | `MONETIZATION.md`, `DECISIONS.md` (ADR-022) |
+| Mock payments / invoices | `PAYMENTS.md`, `DECISIONS.md` (ADR-023) |
+| OTP / password recovery | `VERIFICATION.md`, `DECISIONS.md` (ADR-024) |
 | Trust boundaries | `ARCHITECTURE.md`, `SECURITY.md` |
 | API contracts | `API.md`, `AI.md` |
 | Data model | `DATABASE.md` |
@@ -149,6 +151,8 @@ Track work in `docs/TASKS.md` and milestones in `docs/PROGRESS.md`.
 - Architecture: `docs/ARCHITECTURE.md`
 - MVP: `docs/MVP.md`
 - Monetization: `docs/MONETIZATION.md`
+- Payments: `docs/PAYMENTS.md`
+- Verification: `docs/VERIFICATION.md`
 - Decisions: `docs/DECISIONS.md`
 - Docs index: `docs/README.md`
 

@@ -150,8 +150,9 @@ The following are planned product directions, **not** MVP deliverables:
 - Chat
 - Color analysis
 - Guest preview limits, Free AI credits, Lumora Pro subscription, AI Complete Makeover (see [MONETIZATION.md](./MONETIZATION.md))
+- Mock Pro checkout + shared OTP verification + password recovery (see [PAYMENTS.md](./PAYMENTS.md), [VERIFICATION.md](./VERIFICATION.md))
 
-Sequencing and priorities are owned by [ROADMAP.md](./ROADMAP.md). Monetization funnel (Guest → Free → Pro) is accepted product strategy but ships after MVP (ADR-022).
+Sequencing and priorities are owned by [ROADMAP.md](./ROADMAP.md). Monetization funnel (Guest → Free → Pro) is accepted product strategy but ships after MVP (ADR-022…024).
 
 ---
 
@@ -208,6 +209,8 @@ Monorepo is not used.
 | [DEVELOPMENT_RULES.md](./DEVELOPMENT_RULES.md) | Engineering process rules |
 | [ROADMAP.md](./ROADMAP.md) | Phased product plan |
 | [MONETIZATION.md](./MONETIZATION.md) | Access tiers, credits, Pro paywalls |
+| [PAYMENTS.md](./PAYMENTS.md) | Mock payment workflow + provider port |
+| [VERIFICATION.md](./VERIFICATION.md) | Shared OTP + password recovery |
 | [DECISIONS.md](./DECISIONS.md) | Architecture Decision Records |
 | [TASKS.md](./TASKS.md) | Execution backlog |
 | [PROGRESS.md](./PROGRESS.md) | Delivery progress log |
