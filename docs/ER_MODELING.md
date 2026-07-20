@@ -231,24 +231,7 @@ history
 
 ---
 
-## 8. Comparison Note (Gadjet-Store style)
-
-Gadjet-Store backend’da root Mongoose models `src/schema/*.model.ts` ko‘rinishida yuritiladi  
-(Member / Product / Order / OrderItem / View).
-
-Lumora’da domain bo‘yicha ajratilgan:
-
-```text
-src/users/schemas/user.schema.ts
-src/face-analyses/schemas/face-analysis.schema.ts
-src/recommendations/schemas/recommendation.schema.ts
-```
-
-ER modeling manbasi shu fayl (`docs/ER_MODELING.md`). Model o‘zgarsa — diagram + jadval shu yerda yangilanadi.
-
----
-
-## 9. Summary
+## 8. Summary
 
 MVP ER modeli kichik va aniq:
 
@@ -261,4 +244,4 @@ USER
       └─ embeds RECOMMENDATION_ITEM[]
 ```
 
-Keyingi backend qadam (Auth T-101) shu ER ustiga yoziladi — yangi collection qo‘shilmaydi (refresh tokens ochiq bo‘lsa alohida ADR).
+Keyingi backend qadam (Auth T-101) shu ER ustiga yoziladi — yangi collection qo‘shilmaydi (`refresh_tokens` faqat OPEN-014 yopilganda).
