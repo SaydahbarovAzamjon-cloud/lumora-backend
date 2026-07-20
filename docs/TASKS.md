@@ -37,6 +37,7 @@ Executable backlog for Lumora. Tasks are grouped by phase and surface. This is a
 | T-015 | Write `docs/README.md` | done | |
 | T-016 | Write `.cursor/agent.md` | done | |
 | T-017 | Resolve remaining opens (OPEN-004, 010, 014, 015, 017) as needed | todo | See DECISIONS.md |
+| T-018 | Write `docs/MONETIZATION.md` + ADR-022 | done | Guest → Free → Pro |
 
 ---
 
@@ -97,11 +98,19 @@ Do not pull these into Phase 1 unless scope is explicitly changed via ADR:
 | T-200 | Glasses recommendation | 2 |
 | T-201 | Beard recommendation | 2 |
 | T-202 | Color analysis | 2 |
+| T-210 | Guest one-hairstyle preview + account paywall | 2b |
+| T-211 | Free credit wallet (grant 10/mo, debit on generate) | 2b |
+| T-212 | Credit cost table + NestJS entitlement checks | 2b |
+| T-213 | Lumora Pro subscription + Pro paywall | 2b |
+| T-214 | AI Complete Makeover (Pro-only) | 2b |
+| T-215 | HD export / watermark rules by tier | 2b |
 | T-300 | Outfit recommendation | 3 |
 | T-301 | Wardrobe | 3 |
 | T-302 | Shopping | 3 |
 | T-400 | Virtual try-on | 4 |
 | T-401 | Chat | 4 |
+
+Monetization details: [MONETIZATION.md](./MONETIZATION.md) · ADR-022. Billing provider still open (OPEN-018).
 
 ---
 

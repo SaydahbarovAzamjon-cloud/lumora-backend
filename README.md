@@ -85,8 +85,9 @@ These are **out of scope for MVP**:
 - Virtual try-on
 - Chat
 - Color analysis
+- Guest → Free credits → Lumora Pro monetization ([`docs/MONETIZATION.md`](./docs/MONETIZATION.md))
 
-See [`docs/ROADMAP.md`](./docs/ROADMAP.md) once published.
+See [`docs/ROADMAP.md`](./docs/ROADMAP.md).
 
 ---
 
@@ -107,7 +108,7 @@ Backend concerns for MVP include authentication, accepting scan/landmark payload
 
 ## Documentation
 
-Authoritative project documentation will live in `docs/`:
+Authoritative project documentation lives in `docs/`:
 
 ```text
 docs/
@@ -122,15 +123,16 @@ docs/
 ├── CODING_STANDARDS.md
 ├── DEVELOPMENT_RULES.md
 ├── ROADMAP.md
+├── MONETIZATION.md
 ├── DECISIONS.md
 ├── TASKS.md
 ├── PROGRESS.md
 └── README.md
 ```
 
-Agent guidance: [`.cursor/agent.md`](./.cursor/agent.md) (to be added with the documentation set).
+Agent guidance: [`.cursor/agent.md`](./.cursor/agent.md).
 
-Start with [`docs/PROJECT.md`](./docs/PROJECT.md) after it is approved and published.
+Start with [`docs/README.md`](./docs/README.md).
 
 ---
 

@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Status | Active source of truth |
-| Related | [PROJECT.md](./PROJECT.md) · [ARCHITECTURE.md](./ARCHITECTURE.md) · [ROADMAP.md](./ROADMAP.md) · [TASKS.md](./TASKS.md) · [PROGRESS.md](./PROGRESS.md) |
+| Related | [PROJECT.md](./PROJECT.md) · [ARCHITECTURE.md](./ARCHITECTURE.md) · [ROADMAP.md](./ROADMAP.md) · [MONETIZATION.md](./MONETIZATION.md) · [TASKS.md](./TASKS.md) · [PROGRESS.md](./PROGRESS.md) |
 
 ---
 
@@ -127,7 +127,7 @@ Do not implement these as MVP requirements:
 Also out of MVP unless separately decided:
 
 - Admin dashboards
-- Payment / subscriptions
+- Payment / subscriptions / AI credits (accepted strategy in [MONETIZATION.md](./MONETIZATION.md); ships post-MVP per ADR-022)
 - Social sharing
 - Multi-language productization (not decided)
 - Generative AI image creation as a core loop

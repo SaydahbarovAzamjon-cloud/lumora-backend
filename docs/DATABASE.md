@@ -249,8 +249,9 @@ Hairstyle catalog is **not** a MongoDB collection in MVP — it is **static JSON
 | Outfit | `outfits` |
 | Shopping | `products`, `orders` (if first-party) |
 | Chat | `conversations`, `messages` |
+| Monetization (ADR-022) | `credit_wallets`, `credit_transactions`, `subscriptions` |
 
-These must not appear as MVP blockers.
+These must not appear as MVP blockers. Monetization model: [MONETIZATION.md](./MONETIZATION.md).
 
 ---
 

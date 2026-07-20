@@ -57,6 +57,15 @@ User finalized MVP decisions. Docs updated to:
 
 ---
 
+### 2026-07-20 — Monetization strategy documented
+
+- Completed: `docs/MONETIZATION.md` (Guest → Free credits → Pro, paywalls, Makeover)
+- Decisions made: **ADR-022** freemium + unified credit wallet
+- Updated: README index, PROJECT, MVP, ROADMAP (Phase 2b), TASKS, DECISIONS opens OPEN-018…020
+- Note: Monetization remains **post-MVP**; guest “selfie upload” wording reconciled to landmarks-only (ADR-011)
+
+---
+
 ## 4. In Progress
 
 | Item | Owner | Notes |

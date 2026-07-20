@@ -37,6 +37,7 @@ Agent rules: [`../.cursor/agent.md`](../.cursor/agent.md)
 | [CODING_STANDARDS.md](./CODING_STANDARDS.md) | Language and code conventions |
 | [DEVELOPMENT_RULES.md](./DEVELOPMENT_RULES.md) | Process and decision discipline |
 | [ROADMAP.md](./ROADMAP.md) | Phased plan beyond MVP |
+| [MONETIZATION.md](./MONETIZATION.md) | Guest → Free → Pro, credits, paywalls |
 | [DECISIONS.md](./DECISIONS.md) | ADR log + open questions |
 | [TASKS.md](./TASKS.md) | Execution backlog |
 | [PROGRESS.md](./PROGRESS.md) | Milestone log |
@@ -60,6 +61,7 @@ Next.js (MediaPipe)
 | Repos | `lumora-backend`, `lumora-frontend`, `lumora-ai` (no monorepo) |
 | AI prod auth | Private network + `X-API-KEY` |
 | Hair catalog | Static JSON (MVP) |
+| Monetization | Guest → Free (10 credits/mo) → Pro (post-MVP; ADR-022) |
 | Hard rule | Frontend never calls AI directly |
 
 ---
@@ -80,6 +82,7 @@ docs/
 ├── CODING_STANDARDS.md
 ├── DEVELOPMENT_RULES.md
 ├── ROADMAP.md
+├── MONETIZATION.md
 ├── DECISIONS.md
 ├── TASKS.md
 └── PROGRESS.md

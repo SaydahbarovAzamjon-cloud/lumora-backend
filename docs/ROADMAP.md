@@ -27,10 +27,13 @@ Build a trusted personal styling pipeline: guided capture → analysis → perso
 flowchart LR
   P0[Phase 0: Docs & Foundations] --> P1[Phase 1: MVP]
   P1 --> P2[Phase 2: Style Expansion]
+  P2 --> P2b[Phase 2b: Monetization]
   P2 --> P3[Phase 3: Wardrobe & Shopping]
+  P2b --> P3
   P3 --> P4[Phase 4: Immersive & Conversational]
 ```
 
+Monetization (Guest → Free credits → Pro) may start once MVP is stable and at least one generation surface exists to gate. Full Pro value (glasses, beard, outfit, Makeover) scales with Phase 2–3 feature availability. See [MONETIZATION.md](./MONETIZATION.md).
 ---
 
 ## 4. Phase 0 — Documentation & Foundations
@@ -88,7 +91,31 @@ Extend recommendation domains using the same architecture.
 
 ---
 
-## 7. Phase 3 — Wardrobe & Shopping
+## 7. Phase 2b — Monetization & Access Control
+
+**Scope:** see [MONETIZATION.md](./MONETIZATION.md) · ADR-022
+
+Introduce the conversion funnel without changing NestJS-mediated AI boundaries.
+
+| Capability | Notes |
+|---|---|
+| Guest one-hairstyle preview | Same landmarks pipeline; lock after first generation |
+| Free monthly credits (10) | Unified credit wallet; server-side debit |
+| Credit costs per action | Hair/glasses/beard/hat/palette = 1; outfit = 2 |
+| Lumora Pro subscription | Unlimited credits + HD / no watermark / priority |
+| AI Complete Makeover | Pro-only flagship (requires multi-category support) |
+| Benefit-led paywalls | Guest→Free and Free→Pro copy from MONETIZATION.md |
+
+**Exit criteria (phase-level)**
+
+- [ ] NestJS enforces Guest / Free / Pro before FastAPI calls
+- [ ] Free users receive and spend monthly credits correctly
+- [ ] Credits = 0 surfaces Pro paywall with benefit list
+- [ ] Complete Makeover is Pro-exclusive when the feature ships
+
+---
+
+## 8. Phase 3 — Wardrobe & Shopping
 
 | Feature | Notes |
 |---|---|
@@ -103,7 +130,7 @@ Extend recommendation domains using the same architecture.
 
 ---
 
-## 8. Phase 4 — Immersive & Conversational
+## 9. Phase 4 — Immersive & Conversational
 
 | Feature | Notes |
 |---|---|
@@ -116,7 +143,7 @@ Extend recommendation domains using the same architecture.
 
 ---
 
-## 9. Cross-Cutting Work (All Phases)
+## 10. Cross-Cutting Work (All Phases)
 
 | Track | Examples |
 |---|---|
@@ -129,7 +156,7 @@ These do not override MVP scope gates.
 
 ---
 
-## 10. Explicit Non-Roadmap for Now
+## 11. Explicit Non-Roadmap for Now
 
 Unless decided otherwise, do not prioritize:
 
@@ -139,7 +166,7 @@ Unless decided otherwise, do not prioritize:
 
 ---
 
-## 11. Planning Rules
+## 12. Planning Rules
 
 | Rule | Detail |
 |---|---|
@@ -149,6 +176,6 @@ Unless decided otherwise, do not prioritize:
 
 ---
 
-## 12. Summary
+## 13. Summary
 
-Lumora ships in layers: **docs → MVP hair pipeline → expanded style recommendations → wardrobe/shopping → try-on/chat**, always preserving NestJS-mediated AI architecture.
+Lumora ships in layers: **docs → MVP hair pipeline → expanded style recommendations → monetization (Guest/Free/Pro credits) → wardrobe/shopping → try-on/chat**, always preserving NestJS-mediated AI architecture.

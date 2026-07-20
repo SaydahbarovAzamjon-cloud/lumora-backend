@@ -299,6 +299,34 @@ Future versions may add time-based retention policies.
 
 ---
 
+### ADR-022 — Freemium monetization: Guest → Free credits → Pro
+
+| Field | Value |
+|---|---|
+| Status | Accepted |
+| Date | 2026-07-20 |
+| Spec | [MONETIZATION.md](./MONETIZATION.md) |
+
+**Context:** Lumora needs a conversion model that lets users experience AI quality before paying, then scales generation access without per-feature hard caps.
+
+**Decision:**
+
+| Tier | Access |
+|---|---|
+| **Guest** | One hairstyle preview after face analysis; then lock → Create Free Account |
+| **Free** | 10 AI Credits / month; unified credit wallet (hair/glasses/beard/hat/palette = 1; outfit = 2) |
+| **Pro** | Unlimited credits; HD / no watermark; priority queue; **AI Complete Makeover** exclusive |
+
+**Consequences:**
+
+- Monetization is **post-MVP** (does not expand ADR-007)
+- NestJS owns entitlement + credit debit before FastAPI calls
+- Guest preview uses the **landmarks-only** pipeline (ADR-011) — no selfie upload
+- Credit costs and paywall copy live in [MONETIZATION.md](./MONETIZATION.md)
+- New AI features add a credit cost row; Pro exclusivity only when explicitly decided
+
+---
+
 ## 3. Open Decisions (Remaining)
 
 | ID | Topic | Why it matters |
@@ -308,6 +336,9 @@ Future versions may add time-based retention policies.
 | OPEN-014 | Refresh token yes/no + JWT TTLs | Auth session UX |
 | OPEN-015 | Default locale / language detection | i18n UX |
 | OPEN-017 | Account-deletion UX timing (MVP vs fast-follow) | Completes ADR-020 operationally |
+| OPEN-018 | Payment provider + Pro billing period (monthly/annual) | Required to implement ADR-022 Pro |
+| OPEN-019 | Free credit reset policy (calendar month vs rolling 30 days) | Wallet refill semantics |
+| OPEN-020 | Guest abuse controls (rate limit / fingerprint) | Protect one-preview fairness |
 
 ---
 
@@ -324,6 +355,8 @@ Future versions may add time-based retention policies.
 | Kakao OAuth in MVP | Rejected for MVP | ADR-009 |
 | Native mobile apps in MVP | Rejected for MVP | ADR-015 |
 | MongoDB hairstyle catalog in MVP | Deferred | ADR-021 (static JSON now) |
+| Payments / subscriptions in MVP | Deferred | ADR-022 (post-MVP freemium) |
+| Per-feature Free caps instead of credits | Rejected | ADR-022 prefers unified wallet |
 
 ---
 
@@ -347,3 +380,5 @@ Future versions may add time-based retention policies.
 ## 6. Summary
 
 Final MVP decisions: Email/Password + Google + JWT Bearer; landmarks-only JSON; fixed face-shape catalog; hybrid hair recs matched to **static JSON** catalog; men-only; web + mobile web; `en`/`ko`/`uz`; no Redis/BullMQ; multi-repo (`lumora-backend`, `lumora-frontend`, `lumora-ai`); NestJS↔FastAPI private network (prod adds `X-API-KEY`); retain data until account deletion.
+
+Post-MVP monetization (ADR-022): **Guest → Free (10 credits/mo) → Pro**, unified credit wallet, Complete Makeover Pro-only — see [MONETIZATION.md](./MONETIZATION.md).
