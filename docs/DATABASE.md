@@ -237,11 +237,46 @@ Hairstyle catalog is **not** a MongoDB collection in MVP — it is **static JSON
 | Keep `rawAiResponse` in production | Open |
 | Soft delete vs hard delete on account deletion | Open (OPEN-017 related) |
 | MongoDB hosting (Atlas vs self-hosted) | Open |
-| Mongoose vs native driver conventions | Open (NestJS+Mongoose is common but not formally decided here) |
+| Mongoose vs native driver conventions | **Accepted (implementation):** NestJS + Mongoose |
 
 ---
 
-## 10. Future Collections (Do Not Build Yet)
+## 10. Implementation Mapping (NestJS)
+
+This section explains how the logical model above maps to code in `lumora-backend`.
+
+| Logical collection | Mongoose class | File | MongoDB collection name |
+|---|---|---|---|
+| `users` | `User` (+ embedded `AuthProvider`) | `src/users/schemas/user.schema.ts` | `users` |
+| `face_analyses` | `FaceAnalysis` | `src/face-analyses/schemas/face-analysis.schema.ts` | `face_analyses` |
+| `recommendations` | `Recommendation` (+ embedded `RecommendationItem`) | `src/recommendations/schemas/recommendation.schema.ts` | `recommendations` |
+| `refresh_tokens` | — | Not created | Deferred until OPEN-014 |
+
+### Field notes (implementation)
+
+| Topic | How it is implemented |
+|---|---|
+| Email uniqueness | Sparse unique index on `email` (Google-only users may omit email later, but MVP usually has one) |
+| Google linking | Unique compound index on `providers.type` + `providers.subject` |
+| Password safety | `passwordHash` uses `select: false`; never added to GraphQL `User` type |
+| Landmarks | `Schema.Types` Mixed/`Object` until OPEN-004 freezes the MediaPipe point contract |
+| Face shape | Shared TS enum `FaceShape` (ADR-012) used by Mongoose + GraphQL |
+| Recommendation category | MongoDB stores wire value `hair`; GraphQL enum is `HAIR` |
+| History indexes | `{ userId, createdAt: -1 }` on analyses and recommendations |
+| Modules | `UsersModule`, `FaceAnalysesModule`, `RecommendationsModule` register schemas via `MongooseModule.forFeature` |
+
+### What this phase does **not** include yet
+
+- Auth services / JWT issuance (T-101)
+- Writing analyses/recommendations from `analyzeFace` (T-105)
+- History resolver logic (T-106)
+- `refresh_tokens` collection (OPEN-014)
+
+Env bootstrap: see root `.env.example` (`MONGODB_URI`).
+
+---
+
+## 11. Future Collections (Do Not Build Yet)
 
 | Future feature | Likely future collections (illustrative) |
 |---|---|
@@ -254,6 +289,6 @@ These must not appear as MVP blockers.
 
 ---
 
-## 11. Summary
+## 12. Summary
 
-MongoDB stores **users** (multi-provider identities), **face analyses** (landmarks + results), and **hair recommendations/history**, written only by NestJS. Data is retained until the user deletes it. Face images are not part of the MVP store. The model stays small, user-scoped, and ready for future recommendation categories.
+MongoDB stores **users** (multi-provider identities), **face analyses** (landmarks + results), and **hair recommendations/history**, written only by NestJS. Data is retained until the user deletes it. Face images are not part of the MVP store. The model stays small, user-scoped, and ready for future recommendation categories. Mongoose schemas for the three MVP collections are implemented under `src/` (see Section 10).

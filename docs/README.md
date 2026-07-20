@@ -40,6 +40,7 @@ Agent rules: [`../.cursor/agent.md`](../.cursor/agent.md)
 | [DECISIONS.md](./DECISIONS.md) | ADR log + open questions |
 | [TASKS.md](./TASKS.md) | Execution backlog |
 | [PROGRESS.md](./PROGRESS.md) | Milestone log |
+| [SCHEMA_AUDIT.md](./SCHEMA_AUDIT.md) | Backend schema foundation audit (2026-07-20) |
 
 ---
 
@@ -73,8 +74,8 @@ docs/
 ├── ARCHITECTURE.md
 ├── MONOREPO.md
 ├── MVP.md
-├── DATABASE.md
-├── API.md
+├── DATABASE.md               ← logical model + NestJS/Mongoose mapping (§10)
+├── API.md                    ← GraphQL/FastAPI contracts + NestJS mapping (§9)
 ├── AI.md
 ├── SECURITY.md
 ├── CODING_STANDARDS.md
@@ -82,7 +83,18 @@ docs/
 ├── ROADMAP.md
 ├── DECISIONS.md
 ├── TASKS.md
-└── PROGRESS.md
+├── PROGRESS.md
+└── SCHEMA_AUDIT.md           ← schema foundation audit
+```
+
+Backend schema code (not under `docs/`):
+
+```text
+src/users/schemas/            User + AuthProvider
+src/face-analyses/schemas/    FaceAnalysis
+src/recommendations/schemas/  Recommendation + items
+src/schema/                   GraphQL types/inputs + foundation resolvers
+src/schema/schema.gql         SDL snapshot for review / codegen
 ```
 
 ---

@@ -1,0 +1,144 @@
+# ------------------------------------------------------
+# THIS FILE WAS GENERATED / MAINTAINED FOR LUMORA MVP SCHEMA
+# Source of truth for field intent: docs/API.md + docs/DATABASE.md
+# NestJS code-first types live under src/schema/ and src/**/schemas/
+# Resolvers that throw "Not implemented" are schema placeholders (T-101 / T-105 / T-106).
+# ------------------------------------------------------
+
+input AnalyzeFaceInput {
+  landmarks: FaceLandmarkInput!
+}
+
+type AuthPayload {
+  """Present only if refresh-token strategy is enabled (OPEN-014)."""
+  refreshToken: String
+  accessToken: String!
+  user: User!
+}
+
+enum FaceShape {
+  DIAMOND
+  HEART
+  OBLONG
+  OTHER
+  OVAL
+  ROUND
+  SQUARE
+  TRIANGLE
+}
+
+input FaceLandmarkInput {
+  meta: FaceScanMetaInput
+  points: [LandmarkPointInput!]!
+}
+
+type FaceAnalysisResult {
+  """Face analysis outcome with linked hair recommendation."""
+  faceShape: FaceShape!
+  id: ID!
+  recommendations: Recommendation!
+}
+
+input FaceScanMetaInput {
+  source: String
+  version: String
+}
+
+input GoogleAuthInput {
+  """ID token or authorization code from Google Sign-In."""
+  idToken: String!
+}
+
+input LandmarkPointInput {
+  index: Int
+  x: Float!
+  y: Float!
+  z: Float
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+type Mutation {
+  """Submit landmarks, orchestrate AI, persist history. Implementation: T-105."""
+  analyzeFace(input: AnalyzeFaceInput!): FaceAnalysisResult!
+
+  """Login with email/password. Implementation: T-101."""
+  login(input: LoginInput!): AuthPayload!
+
+  """Login or link via Google OAuth. Implementation: T-101."""
+  loginWithGoogle(input: GoogleAuthInput!): AuthPayload!
+
+  """Logout / invalidate session if refresh strategy exists. Implementation: T-101 / OPEN-014."""
+  logout: Boolean!
+
+  """Register with email/password. Implementation: T-101."""
+  register(input: RegisterInput!): AuthPayload!
+}
+
+type Query {
+  """Temporary health field confirming GraphQL schema bootstrap. Remove once domain resolvers are live."""
+  _schemaHealth: String!
+
+  """Current authenticated user. Implementation: T-101."""
+  me: User!
+
+  """Single recommendation owned by the current user. Implementation: T-106."""
+  recommendation(id: String!): Recommendation
+
+  """Paginated recommendation history for the current user. Implementation: T-106."""
+  recommendationHistory(cursor: String, limit: Int = 20): RecommendationConnection!
+}
+
+type Recommendation {
+  category: RecommendationCategory!
+  createdAt: DateTime!
+  faceAnalysisId: ID!
+  faceShape: FaceShape!
+  id: ID!
+  items: [RecommendationItem!]!
+}
+
+enum RecommendationCategory {
+  HAIR
+}
+
+type RecommendationConnection {
+  """Opaque cursor for the next page, if any."""
+  nextCursor: String
+  nodes: [Recommendation!]!
+}
+
+type RecommendationItem {
+  description: String
+  key: String
+  """Optional extra attributes from the catalog/AI."""
+  metadata: JSON
+  score: Float
+  title: String!
+}
+
+input RegisterInput {
+  displayName: String
+  email: String!
+  password: String!
+}
+
+type User {
+  createdAt: DateTime!
+  displayName: String
+  email: String
+  id: ID!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+"""
+The `JSON` scalar type represents JSON values as specified by ECMA-404.
+"""
+scalar JSON

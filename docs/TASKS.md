@@ -48,13 +48,13 @@ Executable backlog for Lumora. Tasks are grouped by phase and surface. This is a
 |---|---|---|---|
 | T-100 | Auth approach decided (email/password + Google + JWT Bearer) | done | ADR-009, ADR-010 |
 | T-101 | Implement auth module (email/password + Google + JWT Bearer guards) | todo | T-100 |
-| T-102 | Define GraphQL schema for user/analysis/history | todo | T-100, OPEN-004 |
-| T-103 | Implement MongoDB models for users/analyses/recommendations | todo | DATABASE.md |
+| T-102 | Define GraphQL schema for user/analysis/history | done | T-100; OPEN-004 provisional inputs |
+| T-103 | Implement MongoDB models for users/analyses/recommendations | done | DATABASE.md; NestJS+Mongoose |
 | T-104 | Implement FastAPI client in NestJS (`X-API-KEY` in production) | todo | ADR-019 |
 | T-105 | Implement `analyzeFace` orchestration + persistence | todo | T-102, T-103, T-104, T-120 |
 | T-106 | Implement recommendation history queries | todo | T-103, T-105 |
 | T-107 | Map AI/upstream errors to safe GraphQL errors | todo | T-105 |
-| T-108 | Add `.env.example` for API | todo | |
+| T-108 | Add `.env.example` for API | done | |
 
 ### 3.2 AI (`apps/ai` / FastAPI)
 

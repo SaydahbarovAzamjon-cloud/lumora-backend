@@ -19,16 +19,25 @@ Track what has been completed, what is in progress, and what is blocked. Update 
 |---|---|---|
 | Product documentation set | **Complete (initial)** | All planned `docs/` files + `.cursor/agent.md` |
 | Root README | **Aligned** | Lumora source-of-truth; Nest boilerplate removed |
-| NestJS scaffold | Present | Feature modules for MVP not complete |
-| FastAPI AI service | Not started in this repo snapshot | Planned as `apps/ai` |
-| Next.js frontend | Not in this backend-only hosting state | Planned as `apps/web` |
-| MVP end-to-end demo | Not started | Blocked on implementation + open decisions |
+| NestJS scaffold | **Schema foundation done** | Mongoose models + GraphQL types/inputs declared; auth/orchestration pending |
+| FastAPI AI service | Not started in this repo snapshot | Sibling repo `lumora-ai` |
+| Next.js frontend | Not in this backend-only hosting state | Sibling repo `lumora-frontend` |
+| MVP end-to-end demo | Not started | Blocked on auth + AI + frontend scan |
 
-**Overall phase:** Phase 0 (Documentation) complete → Phase 1 (MVP Engineering) ready to start.
+**Overall phase:** Phase 1 (MVP Engineering) — backend schema complete; next is Auth (T-101).
 
 ---
 
 ## 3. Completed
+
+### 2026-07-20 — Backend schema foundation
+
+- Added Mongoose models: `users`, `face_analyses`, `recommendations` (indexes + embedded provider/items)
+- Declared GraphQL enums/types/inputs matching `API.md` (code-first under `src/schema/`)
+- Wired `ConfigModule`, `MongooseModule`, `GraphQLModule` (Apollo) in `AppModule`
+- Added `.env.example` with `MONGODB_URI` and future auth/AI placeholders
+- Documented implementation mapping in `DATABASE.md` §10 and `API.md` §9
+- Stub Query/Mutation resolvers throw until T-101 / T-105 / T-106
 
 ### 2026-07-19 — Documentation foundation
 
@@ -61,7 +70,7 @@ User finalized MVP decisions. Docs updated to:
 
 | Item | Owner | Notes |
 |---|---|---|
-| — | — | Ready for Phase 1 engineering |
+| T-101 Auth module | Backend | Next engineering milestone after schema |
 
 ---
 
@@ -69,7 +78,7 @@ User finalized MVP decisions. Docs updated to:
 
 | Item | Blocker | Reference |
 |---|---|---|
-| Exact landmark JSON field schema | Contract detail | OPEN-004 |
+| Exact landmark JSON field schema | Contract detail (provisional points input exists) | OPEN-004 |
 | Refresh/session UX | Refresh + TTLs | OPEN-014 |
 | Default locale strategy | i18n | OPEN-015 |
 | Account-deletion UX timing | MVP vs fast-follow | OPEN-017 |
@@ -104,4 +113,4 @@ User finalized MVP decisions. Docs updated to:
 
 ## 8. Summary
 
-Documentation Phase 0 is complete. Engineering Phase 1 has not started. The next meaningful progress entries should reflect auth, AI contract, orchestration, and frontend scan integration — not new out-of-scope features.
+Documentation Phase 0 is complete. Backend **schema foundation** (T-102, T-103, T-108) is in place. Next meaningful progress entries should reflect **auth (T-101)**, then AI contract + NestJS orchestration, then frontend scan integration.

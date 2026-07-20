@@ -299,6 +299,24 @@ Future versions may add time-based retention policies.
 
 ---
 
+### ADR-022 — NestJS persists with Mongoose
+
+| Field | Value |
+|---|---|
+| Status | Accepted |
+| Date | 2026-07-20 |
+| Closes | DATABASE.md open item on Mongoose vs native driver |
+
+**Decision:** NestJS uses **Mongoose** (`@nestjs/mongoose`) for MVP MongoDB models (`users`, `face_analyses`, `recommendations`).
+
+**Consequences:**
+
+- Schema classes live under `src/**/schemas/`
+- Indexes for email/providers and `userId`+`createdAt` history paths are declared on schemas
+- `refresh_tokens` remains optional until OPEN-014
+
+---
+
 ## 3. Open Decisions (Remaining)
 
 | ID | Topic | Why it matters |

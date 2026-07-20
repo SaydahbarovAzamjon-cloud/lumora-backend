@@ -291,15 +291,49 @@ Auth mutations cover email register/login plus Google OAuth. Kakao and phone are
 
 | Decision | Status |
 |---|---|
-| Exact MediaPipe landmark GraphQL input shape | OPEN-004 |
-| Pagination style (`cursor` vs `offset`) | Open |
+| Exact MediaPipe landmark GraphQL input shape | OPEN-004 (provisional `LandmarkPointInput` shipped; may refine) |
+| Pagination style (`cursor` vs `offset`) | Open (provisional cursor connection type shipped) |
 | Refresh token strategy / TTLs | OPEN-014 |
-| GraphQL playground exposure in production | Open (default recommendation: disabled in prod) |
+| GraphQL playground exposure in production | Open (default: disabled when `NODE_ENV=production`) |
 | OAuth callback / redirect details | Open (implementation) |
 
 ---
 
-## 9. Cross-References
+## 9. Implementation Mapping (NestJS GraphQL)
+
+Code-first GraphQL types live under `src/schema/`. A reference SDL snapshot is kept at `src/schema/schema.gql`.
+
+| API.md concept | Code location |
+|---|---|
+| Enums (`FaceShape`, `RecommendationCategory`) | `src/common/enums/` |
+| `User`, `AuthPayload`, `Recommendation*`, `FaceAnalysisResult` | `src/schema/types/` |
+| `RegisterInput`, `LoginInput`, `GoogleAuthInput`, `AnalyzeFaceInput` | `src/schema/inputs/` |
+| Query / Mutation field registration | `src/schema/schema-foundation*.resolver.ts` |
+| Module wiring | `src/schema/schema.module.ts` + `AppModule` (`GraphQLModule` + Apollo) |
+
+### Declared operations (schema present; business logic pending)
+
+| Operation | Auth (intended) | Implementation task |
+|---|---|---|
+| `me` | Required | T-101 |
+| `recommendationHistory` | Required | T-106 |
+| `recommendation(id)` | Required | T-106 |
+| `register` / `login` / `loginWithGoogle` / `logout` | Public / mixed | T-101 |
+| `analyzeFace` | Required | T-105 |
+
+Until those tasks land, resolvers throw `Not implemented` so the schema can be reviewed and clients can generate types early.
+
+### Extra field
+
+| Field | Purpose |
+|---|---|
+| `_schemaHealth` | Temporary GraphQL bootstrap probe; remove once domain resolvers are live |
+
+HTTP `GET /health` remains available for process liveness (non-GraphQL).
+
+---
+
+## 10. Cross-References
 
 | Concern | Document |
 |---|---|
@@ -310,6 +344,6 @@ Auth mutations cover email register/login plus Google OAuth. Kakao and phone are
 
 ---
 
-## 10. Summary
+## 11. Summary
 
-Lumora’s public API is **NestJS GraphQL** with **JWT Bearer** auth. The MVP surface covers multi-provider auth, landmarks-only face analysis orchestration, and recommendation history. FastAPI exposes an internal `/v1/analyze/face` style contract used only by NestJS. The frontend never receives a direct AI API.
+Lumora’s public API is **NestJS GraphQL** with **JWT Bearer** auth. The MVP surface covers multi-provider auth, landmarks-only face analysis orchestration, and recommendation history. FastAPI exposes an internal `/v1/analyze/face` style contract used only by NestJS. The frontend never receives a direct AI API. GraphQL types/inputs for that surface are now declared in NestJS (see Section 9); auth guards and persistence wiring are the next backend steps.
