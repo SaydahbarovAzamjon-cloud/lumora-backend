@@ -1,0 +1,248 @@
+# ------------------------------------------------------
+# THIS FILE WAS GENERATED / MAINTAINED FOR LUMORA MVP SCHEMA
+# Source of truth for field intent: docs/API.md + docs/DATABASE.md
+# NestJS code-first types live under src/schema/ and src/**/schemas/
+# ------------------------------------------------------
+
+input AnalyzeFaceInput {
+  landmarks: FaceLandmarkInput!
+}
+
+type AuthPayload {
+  """Present only if refresh-token strategy is enabled (OPEN-014)."""
+  refreshToken: String
+  accessToken: String!
+  user: User!
+}
+
+type AccountVerificationConfirmed {
+  challengeId: String!
+  message: String!
+  purpose: VerificationPurpose!
+  verified: Boolean!
+}
+
+type AccountVerificationPending {
+  accepted: Boolean!
+  channel: VerificationChannel
+  expiresInSeconds: Int
+  maskedDestination: String
+  message: String!
+  purpose: VerificationPurpose!
+}
+
+input ConfirmAccountVerificationInput {
+  code: String!
+  purpose: VerificationPurpose!
+}
+
+input RequestAccountVerificationInput {
+  purpose: VerificationPurpose!
+}
+
+input ConfirmEmailInput {
+  """6-digit confirmation code from email."""
+  code: String!
+  email: String!
+}
+
+type EmailVerificationPending {
+  channel: VerificationChannel
+  email: String!
+  expiresInSeconds: Int
+  maskedDestination: String
+  message: String!
+  verificationRequired: Boolean!
+}
+
+enum FaceShape {
+  DIAMOND
+  HEART
+  OBLONG
+  OTHER
+  OVAL
+  ROUND
+  SQUARE
+  TRIANGLE
+}
+
+input FaceLandmarkInput {
+  meta: FaceScanMetaInput
+  points: [LandmarkPointInput!]!
+}
+
+type FaceAnalysisResult {
+  faceShape: FaceShape!
+  id: ID!
+  recommendations: Recommendation!
+}
+
+input FaceScanMetaInput {
+  source: String
+  version: String
+}
+
+input ForgotPasswordInput {
+  """Email (or future username). MVP uses email."""
+  identifier: String!
+}
+
+type ForgotPasswordPending {
+  accepted: Boolean!
+  authentication: String
+  channel: VerificationChannel
+  expiresInSeconds: Int
+  maskedDestination: String
+  message: String!
+}
+
+input GoogleAuthInput {
+  """ID token from Google Sign-In."""
+  idToken: String!
+}
+
+input LandmarkPointInput {
+  index: Int
+  x: Float!
+  y: Float!
+  z: Float
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+type Mutation {
+  """Submit landmarks, orchestrate AI, persist history. Implementation: T-105."""
+  analyzeFace(input: AnalyzeFaceInput!): FaceAnalysisResult!
+
+  """Confirm signup OTP and receive JWT."""
+  confirmEmail(input: ConfirmEmailInput!): AuthPayload!
+
+  """Start password recovery. OTP channel from auth provider."""
+  forgotPassword(input: ForgotPasswordInput!): ForgotPasswordPending!
+
+  """Login with email/password (requires verified email)."""
+  login(input: LoginInput!): AuthPayload!
+
+  """Login or link account via Google ID token."""
+  loginWithGoogle(input: GoogleAuthInput!): AuthPayload!
+
+  """Logout. Stateless JWT: client drops token."""
+  logout: Boolean!
+
+  """Register with email/password. Sends OTP; JWT after confirmEmail."""
+  register(input: RegisterInput!): EmailVerificationPending!
+
+  """Resend signup confirmation OTP."""
+  resendVerificationCode(input: ResendVerificationInput!): EmailVerificationPending!
+
+  """Request OTP for payment / 2FA / change-email / delete / sensitive actions."""
+  requestAccountVerification(input: RequestAccountVerificationInput!): AccountVerificationPending!
+
+  """Confirm OTP for a sensitive account action."""
+  confirmAccountVerification(input: ConfirmAccountVerificationInput!): AccountVerificationConfirmed!
+
+  """Set a new password after OTP verification. Invalidates sessions."""
+  resetPassword(input: ResetPasswordInput!): PasswordResetSuccess!
+
+  """Verify forgot-password OTP and receive a short-lived reset token."""
+  verifyPasswordResetOtp(input: VerifyPasswordResetOtpInput!): PasswordResetOtpVerified!
+}
+
+type PasswordResetOtpVerified {
+  message: String!
+  resetToken: String!
+}
+
+type PasswordResetSuccess {
+  message: String!
+  success: Boolean!
+}
+
+type Query {
+  """Current authenticated user."""
+  me: User!
+
+  """Single recommendation owned by the current user. Implementation: T-106."""
+  recommendation(id: String!): Recommendation
+
+  """Paginated recommendation history for the current user. Implementation: T-106."""
+  recommendationHistory(cursor: String, limit: Int = 20): RecommendationConnection!
+}
+
+type Recommendation {
+  category: RecommendationCategory!
+  createdAt: DateTime!
+  faceAnalysisId: ID!
+  faceShape: FaceShape!
+  id: ID!
+  items: [RecommendationItem!]!
+}
+
+enum RecommendationCategory {
+  HAIR
+}
+
+type RecommendationConnection {
+  nextCursor: String
+  nodes: [Recommendation!]!
+}
+
+type RecommendationItem {
+  description: String
+  key: String
+  metadata: JSON
+  score: Float
+  title: String!
+}
+
+input RegisterInput {
+  displayName: String
+  email: String!
+  password: String!
+}
+
+input ResendVerificationInput {
+  email: String!
+}
+
+input ResetPasswordInput {
+  newPassword: String!
+  resetToken: String!
+}
+
+type User {
+  createdAt: DateTime!
+  displayName: String
+  email: String
+  id: ID!
+}
+
+enum VerificationChannel {
+  EMAIL
+  KAKAO
+  SMS
+  TELEGRAM
+}
+
+enum VerificationPurpose {
+  CHANGE_EMAIL
+  CHANGE_PHONE
+  DELETE_ACCOUNT
+  DISABLE_2FA
+  EMAIL_SIGNUP
+  ENABLE_2FA
+  FORGOT_PASSWORD
+  PAYMENT
+  SENSITIVE_ACCOUNT_ACTION
+}
+
+input VerifyPasswordResetOtpInput {
+  code: String!
+  email: String!
+}
+
+scalar DateTime
+scalar JSON

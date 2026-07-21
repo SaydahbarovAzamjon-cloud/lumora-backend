@@ -291,15 +291,41 @@ Auth mutations cover email register/login plus Google OAuth. Kakao and phone are
 
 | Decision | Status |
 |---|---|
-| Exact MediaPipe landmark GraphQL input shape | OPEN-004 |
-| Pagination style (`cursor` vs `offset`) | Open |
+| Exact MediaPipe landmark GraphQL input shape | OPEN-004 (provisional `LandmarkPointInput` shipped; may refine) |
+| Pagination style (`cursor` vs `offset`) | Open (provisional cursor connection type shipped) |
 | Refresh token strategy / TTLs | OPEN-014 |
-| GraphQL playground exposure in production | Open (default recommendation: disabled in prod) |
+| GraphQL playground exposure in production | Open (default: disabled when `NODE_ENV=production`) |
 | OAuth callback / redirect details | Open (implementation) |
 
 ---
 
-## 9. Cross-References
+## 9. Implementation Mapping (NestJS GraphQL)
+
+Code-first GraphQL types live under `src/schema/`. A reference SDL snapshot is kept at `src/schema/schema.gql`.
+
+| API.md concept | Code location |
+|---|---|
+| Enums (`FaceShape`, `RecommendationCategory`, `VerificationChannel`, `VerificationPurpose`) | `src/common/enums/`, `src/verification/` |
+| Auth + user types | `src/schema/types/`, `src/auth/` |
+| Shared OTP | `src/verification/verification.service.ts` |
+| Module wiring | `AppModule` + `AuthModule` + `VerificationModule` |
+
+### Auth & verification operations
+
+| Operation | Auth | Status |
+|---|---|---|
+| `register` / `confirmEmail` / `resendVerificationCode` | Public | Implemented (ADR-023/024) |
+| `login` / `loginWithGoogle` / `logout` / `me` | Mixed | Implemented |
+| `forgotPassword` / `verifyPasswordResetOtp` / `resetPassword` | Public | Implemented (ADR-024) |
+| `requestAccountVerification` / `confirmAccountVerification` | Required | Implemented (OTP only; payment/2FA/delete side-effects later) |
+| `recommendationHistory` / `recommendation` | Required | Stub (T-106) |
+| `analyzeFace` | Required | Stub (T-105) |
+
+HTTP `GET /health` remains available for process liveness (non-GraphQL).
+
+---
+
+## 10. Cross-References
 
 | Concern | Document |
 |---|---|
@@ -310,6 +336,6 @@ Auth mutations cover email register/login plus Google OAuth. Kakao and phone are
 
 ---
 
-## 10. Summary
+## 11. Summary
 
-Lumora’s public API is **NestJS GraphQL** with **JWT Bearer** auth. The MVP surface covers multi-provider auth, landmarks-only face analysis orchestration, and recommendation history. FastAPI exposes an internal `/v1/analyze/face` style contract used only by NestJS. The frontend never receives a direct AI API.
+Lumora’s public API is **NestJS GraphQL** with **JWT Bearer** auth, email confirmation, forgot-password recovery, and a shared VerificationService for sensitive account OTPs. Analysis/history mutations remain next (T-105 / T-106).
