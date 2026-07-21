@@ -44,6 +44,7 @@ MongoDB
 | `users` | Account identity and profile fields needed for auth/product |
 | `face_analyses` | Stored analysis inputs/outputs for a scan session |
 | `recommendations` | Hair recommendation results + history projection |
+| `verification_challenges` | Shared OTP challenges (signup, password reset, future payment/2FA) |
 | `refresh_tokens` | Open — include only if token strategy requires server-side refresh storage |
 
 ---
@@ -101,8 +102,14 @@ Supports MVP auth (ADR-009): email/password and Google OAuth only.
 | `providers` | array\<object\> | Yes | Linked identities, e.g. `{ type: "google", subject: "..." }` |
 | `displayName` | string | No | Optional profile label |
 | `locale` | string | No | Preferred UI locale: `en` \| `ko` \| `uz` |
+| `emailVerified` | boolean | Yes | Email/password signup must confirm (ADR-023); Google starts `true` |
+| `tokenVersion` | number | Yes | Bumped on password reset to invalidate JWTs (ADR-024) |
+| `passwordChangedAt` | datetime | No | Last password change timestamp |
 | `createdAt` | datetime | Yes | |
 | `updatedAt` | datetime | Yes | |
+
+OTP codes are **not** stored on the user document. They live in `verification_challenges` (ADR-024).
+
 
 **`providers[]` logical shape:**
 

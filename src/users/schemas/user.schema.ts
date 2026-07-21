@@ -13,7 +13,6 @@ export class AuthProvider {
   })
   type!: AuthProviderType;
 
-  /** Provider subject / unique id (email local subject or Google `sub`). */
   @Prop({ required: true, trim: true })
   subject!: string;
 
@@ -23,10 +22,6 @@ export class AuthProvider {
 
 export const AuthProviderSchema = SchemaFactory.createForClass(AuthProvider);
 
-/**
- * Account identity for email/password + Google OAuth (DATABASE.md §5.1, ADR-009).
- * passwordHash is never exposed via GraphQL.
- */
 @Schema({
   collection: 'users',
   timestamps: true,
@@ -40,7 +35,6 @@ export class User {
   })
   email?: string;
 
-  /** bcrypt (or similar) hash only — never plaintext (DB-05). */
   @Prop({ type: String, required: false, select: false })
   passwordHash?: string;
 
@@ -56,6 +50,19 @@ export class User {
     enum: Object.values(UserLocale),
   })
   locale?: UserLocale;
+
+  /** Email/password signup must confirm before login (ADR-023). */
+  @Prop({ type: Boolean, required: true, default: false })
+  emailVerified!: boolean;
+
+  /**
+   * Bumped on password reset to invalidate existing JWTs (session revoke without Redis).
+   */
+  @Prop({ type: Number, required: true, default: 0 })
+  tokenVersion!: number;
+
+  @Prop({ type: Date, required: false })
+  passwordChangedAt?: Date;
 
   createdAt!: Date;
   updatedAt!: Date;

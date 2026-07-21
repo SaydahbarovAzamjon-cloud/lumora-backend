@@ -1,40 +1,23 @@
-import { Args, Int, Query, Resolver } from '@nestjs/graphql';
+import { Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { UseGuards } from '@nestjs/common';
+import { GqlAuthGuard } from '../auth/gql-auth.guard';
+import { AnalyzeFaceInput } from './inputs/analyze-face.input';
+import { FaceAnalysisResultType } from './types/face-analysis-result.type';
 import { RecommendationConnectionType } from './types/recommendation-connection.type';
 import { RecommendationType } from './types/recommendation.type';
-import { UserType } from './types/user.type';
 
 /**
- * Schema-foundation resolver.
- * Registers MVP Query fields so NestJS can emit the GraphQL schema.
- * Business logic lands in later auth/analysis/history tasks (T-101+).
+ * Remaining MVP GraphQL stubs (analysis + history).
+ * Auth operations live in AuthModule / UsersModule.
  */
 @Resolver()
 export class SchemaFoundationResolver {
-  @Query(() => String, {
-    name: '_schemaHealth',
-    description:
-      'Temporary health field confirming GraphQL schema bootstrap. Remove once domain resolvers are live.',
-  })
-  schemaHealth(): string {
-    return 'ok';
-  }
-
-  /**
-   * Declared for schema emission only — not implemented yet (requires auth).
-   */
-  @Query(() => UserType, {
-    name: 'me',
-    description: 'Current authenticated user. Implementation: T-101.',
-  })
-  me(): never {
-    throw new Error('Not implemented: me (requires auth module T-101)');
-  }
-
   @Query(() => RecommendationConnectionType, {
     name: 'recommendationHistory',
     description:
       'Paginated recommendation history for the current user. Implementation: T-106.',
   })
+  @UseGuards(GqlAuthGuard)
   recommendationHistory(
     @Args('limit', { type: () => Int, nullable: true, defaultValue: 20 })
     limit?: number,
@@ -51,8 +34,19 @@ export class SchemaFoundationResolver {
     description:
       'Single recommendation owned by the current user. Implementation: T-106.',
   })
+  @UseGuards(GqlAuthGuard)
   recommendation(@Args('id', { type: () => String }) id: string): never {
     void id;
     throw new Error('Not implemented: recommendation (requires T-106)');
+  }
+
+  @Mutation(() => FaceAnalysisResultType, {
+    description:
+      'Submit landmarks, orchestrate AI, persist history. Implementation: T-105.',
+  })
+  @UseGuards(GqlAuthGuard)
+  analyzeFace(@Args('input') input: AnalyzeFaceInput): never {
+    void input;
+    throw new Error('Not implemented: analyzeFace (requires T-105)');
   }
 }

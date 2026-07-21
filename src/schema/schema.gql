@@ -2,7 +2,6 @@
 # THIS FILE WAS GENERATED / MAINTAINED FOR LUMORA MVP SCHEMA
 # Source of truth for field intent: docs/API.md + docs/DATABASE.md
 # NestJS code-first types live under src/schema/ and src/**/schemas/
-# Resolvers that throw "Not implemented" are schema placeholders (T-101 / T-105 / T-106).
 # ------------------------------------------------------
 
 input AnalyzeFaceInput {
@@ -14,6 +13,46 @@ type AuthPayload {
   refreshToken: String
   accessToken: String!
   user: User!
+}
+
+type AccountVerificationConfirmed {
+  challengeId: String!
+  message: String!
+  purpose: VerificationPurpose!
+  verified: Boolean!
+}
+
+type AccountVerificationPending {
+  accepted: Boolean!
+  channel: VerificationChannel
+  expiresInSeconds: Int
+  maskedDestination: String
+  message: String!
+  purpose: VerificationPurpose!
+}
+
+input ConfirmAccountVerificationInput {
+  code: String!
+  purpose: VerificationPurpose!
+}
+
+input RequestAccountVerificationInput {
+  purpose: VerificationPurpose!
+}
+
+input ConfirmEmailInput {
+  """6-digit confirmation code from email."""
+  code: String!
+  email: String!
+}
+
+type EmailVerificationPending {
+  channel: VerificationChannel
+  email: String!
+  expiresInSeconds: Int
+  maskedDestination: String
+  message: String!
+  verificationRequired: Boolean!
 }
 
 enum FaceShape {
@@ -33,7 +72,6 @@ input FaceLandmarkInput {
 }
 
 type FaceAnalysisResult {
-  """Face analysis outcome with linked hair recommendation."""
   faceShape: FaceShape!
   id: ID!
   recommendations: Recommendation!
@@ -44,8 +82,22 @@ input FaceScanMetaInput {
   version: String
 }
 
+input ForgotPasswordInput {
+  """Email (or future username). MVP uses email."""
+  identifier: String!
+}
+
+type ForgotPasswordPending {
+  accepted: Boolean!
+  authentication: String
+  channel: VerificationChannel
+  expiresInSeconds: Int
+  maskedDestination: String
+  message: String!
+}
+
 input GoogleAuthInput {
-  """ID token or authorization code from Google Sign-In."""
+  """ID token from Google Sign-In."""
   idToken: String!
 }
 
@@ -65,24 +117,52 @@ type Mutation {
   """Submit landmarks, orchestrate AI, persist history. Implementation: T-105."""
   analyzeFace(input: AnalyzeFaceInput!): FaceAnalysisResult!
 
-  """Login with email/password. Implementation: T-101."""
+  """Confirm signup OTP and receive JWT."""
+  confirmEmail(input: ConfirmEmailInput!): AuthPayload!
+
+  """Start password recovery. OTP channel from auth provider."""
+  forgotPassword(input: ForgotPasswordInput!): ForgotPasswordPending!
+
+  """Login with email/password (requires verified email)."""
   login(input: LoginInput!): AuthPayload!
 
-  """Login or link via Google OAuth. Implementation: T-101."""
+  """Login or link account via Google ID token."""
   loginWithGoogle(input: GoogleAuthInput!): AuthPayload!
 
-  """Logout / invalidate session if refresh strategy exists. Implementation: T-101 / OPEN-014."""
+  """Logout. Stateless JWT: client drops token."""
   logout: Boolean!
 
-  """Register with email/password. Implementation: T-101."""
-  register(input: RegisterInput!): AuthPayload!
+  """Register with email/password. Sends OTP; JWT after confirmEmail."""
+  register(input: RegisterInput!): EmailVerificationPending!
+
+  """Resend signup confirmation OTP."""
+  resendVerificationCode(input: ResendVerificationInput!): EmailVerificationPending!
+
+  """Request OTP for payment / 2FA / change-email / delete / sensitive actions."""
+  requestAccountVerification(input: RequestAccountVerificationInput!): AccountVerificationPending!
+
+  """Confirm OTP for a sensitive account action."""
+  confirmAccountVerification(input: ConfirmAccountVerificationInput!): AccountVerificationConfirmed!
+
+  """Set a new password after OTP verification. Invalidates sessions."""
+  resetPassword(input: ResetPasswordInput!): PasswordResetSuccess!
+
+  """Verify forgot-password OTP and receive a short-lived reset token."""
+  verifyPasswordResetOtp(input: VerifyPasswordResetOtpInput!): PasswordResetOtpVerified!
+}
+
+type PasswordResetOtpVerified {
+  message: String!
+  resetToken: String!
+}
+
+type PasswordResetSuccess {
+  message: String!
+  success: Boolean!
 }
 
 type Query {
-  """Temporary health field confirming GraphQL schema bootstrap. Remove once domain resolvers are live."""
-  _schemaHealth: String!
-
-  """Current authenticated user. Implementation: T-101."""
+  """Current authenticated user."""
   me: User!
 
   """Single recommendation owned by the current user. Implementation: T-106."""
@@ -106,7 +186,6 @@ enum RecommendationCategory {
 }
 
 type RecommendationConnection {
-  """Opaque cursor for the next page, if any."""
   nextCursor: String
   nodes: [Recommendation!]!
 }
@@ -114,7 +193,6 @@ type RecommendationConnection {
 type RecommendationItem {
   description: String
   key: String
-  """Optional extra attributes from the catalog/AI."""
   metadata: JSON
   score: Float
   title: String!
@@ -126,6 +204,15 @@ input RegisterInput {
   password: String!
 }
 
+input ResendVerificationInput {
+  email: String!
+}
+
+input ResetPasswordInput {
+  newPassword: String!
+  resetToken: String!
+}
+
 type User {
   createdAt: DateTime!
   displayName: String
@@ -133,12 +220,29 @@ type User {
   id: ID!
 }
 
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
+enum VerificationChannel {
+  EMAIL
+  KAKAO
+  SMS
+  TELEGRAM
+}
 
-"""
-The `JSON` scalar type represents JSON values as specified by ECMA-404.
-"""
+enum VerificationPurpose {
+  CHANGE_EMAIL
+  CHANGE_PHONE
+  DELETE_ACCOUNT
+  DISABLE_2FA
+  EMAIL_SIGNUP
+  ENABLE_2FA
+  FORGOT_PASSWORD
+  PAYMENT
+  SENSITIVE_ACCOUNT_ACTION
+}
+
+input VerifyPasswordResetOtpInput {
+  code: String!
+  email: String!
+}
+
+scalar DateTime
 scalar JSON

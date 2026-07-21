@@ -5,10 +5,11 @@ import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { MongooseModule } from '@nestjs/mongoose';
 import { join } from 'node:path';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { FaceAnalysesModule } from './face-analyses/face-analyses.module';
 import { RecommendationsModule } from './recommendations/recommendations.module';
+import { VerificationModule } from './verification/verification.module';
 import { SchemaModule } from './schema/schema.module';
 
 @Module({
@@ -29,13 +30,15 @@ import { SchemaModule } from './schema/schema.module';
       autoSchemaFile: join(process.cwd(), 'src/schema/schema.gql'),
       sortSchema: true,
       playground: process.env.NODE_ENV !== 'production',
+      context: ({ req }: { req: unknown }) => ({ req }),
     }),
     UsersModule,
+    VerificationModule,
+    AuthModule,
     FaceAnalysesModule,
     RecommendationsModule,
     SchemaModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
 })
 export class AppModule {}

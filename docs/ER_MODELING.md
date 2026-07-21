@@ -28,6 +28,7 @@ Persistence rules uchun → [DATABASE.md](./DATABASE.md).
 erDiagram
   USER ||--o{ FACE_ANALYSIS : has
   USER ||--o{ RECOMMENDATION : has
+  USER ||--o{ VERIFICATION_CHALLENGE : has
   FACE_ANALYSIS ||--o| RECOMMENDATION : produces
   USER ||--o{ AUTH_PROVIDER : embeds
   RECOMMENDATION ||--o{ RECOMMENDATION_ITEM : embeds
@@ -38,6 +39,9 @@ erDiagram
     string passwordHash
     string displayName
     string locale
+    boolean emailVerified
+    number tokenVersion
+    datetime passwordChangedAt
     datetime createdAt
     datetime updatedAt
   }
@@ -46,6 +50,19 @@ erDiagram
     string type
     string subject
     datetime linkedAt
+  }
+
+  VERIFICATION_CHALLENGE {
+    ObjectId _id PK
+    ObjectId userId FK
+    string purpose
+    string channel
+    string destination
+    string codeHash
+    datetime expiresAt
+    number attempts
+    datetime otpVerifiedAt
+    datetime consumedAt
   }
 
   FACE_ANALYSIS {
@@ -193,6 +210,7 @@ erDiagram
 | `users` | USER | Root document |
 | `face_analyses` | FACE_ANALYSIS | Root document |
 | `recommendations` | RECOMMENDATION | Root document |
+| `verification_challenges` | VERIFICATION_CHALLENGE | Shared OTP challenges (ADR-024) |
 | — | AUTH_PROVIDER | Embedded in USER |
 | — | RECOMMENDATION_ITEM | Embedded in RECOMMENDATION |
 | `refresh_tokens` | — | **Not modeled yet** (OPEN-014) |

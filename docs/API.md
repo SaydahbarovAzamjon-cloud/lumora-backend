@@ -305,29 +305,21 @@ Code-first GraphQL types live under `src/schema/`. A reference SDL snapshot is k
 
 | API.md concept | Code location |
 |---|---|
-| Enums (`FaceShape`, `RecommendationCategory`) | `src/common/enums/` |
-| `User`, `AuthPayload`, `Recommendation*`, `FaceAnalysisResult` | `src/schema/types/` |
-| `RegisterInput`, `LoginInput`, `GoogleAuthInput`, `AnalyzeFaceInput` | `src/schema/inputs/` |
-| Query / Mutation field registration | `src/schema/schema-foundation*.resolver.ts` |
-| Module wiring | `src/schema/schema.module.ts` + `AppModule` (`GraphQLModule` + Apollo) |
+| Enums (`FaceShape`, `RecommendationCategory`, `VerificationChannel`, `VerificationPurpose`) | `src/common/enums/`, `src/verification/` |
+| Auth + user types | `src/schema/types/`, `src/auth/` |
+| Shared OTP | `src/verification/verification.service.ts` |
+| Module wiring | `AppModule` + `AuthModule` + `VerificationModule` |
 
-### Declared operations (schema present; business logic pending)
+### Auth & verification operations
 
-| Operation | Auth (intended) | Implementation task |
+| Operation | Auth | Status |
 |---|---|---|
-| `me` | Required | T-101 |
-| `recommendationHistory` | Required | T-106 |
-| `recommendation(id)` | Required | T-106 |
-| `register` / `login` / `loginWithGoogle` / `logout` | Public / mixed | T-101 |
-| `analyzeFace` | Required | T-105 |
-
-Until those tasks land, resolvers throw `Not implemented` so the schema can be reviewed and clients can generate types early.
-
-### Extra field
-
-| Field | Purpose |
-|---|---|
-| `_schemaHealth` | Temporary GraphQL bootstrap probe; remove once domain resolvers are live |
+| `register` / `confirmEmail` / `resendVerificationCode` | Public | Implemented (ADR-023/024) |
+| `login` / `loginWithGoogle` / `logout` / `me` | Mixed | Implemented |
+| `forgotPassword` / `verifyPasswordResetOtp` / `resetPassword` | Public | Implemented (ADR-024) |
+| `requestAccountVerification` / `confirmAccountVerification` | Required | Implemented (OTP only; payment/2FA/delete side-effects later) |
+| `recommendationHistory` / `recommendation` | Required | Stub (T-106) |
+| `analyzeFace` | Required | Stub (T-105) |
 
 HTTP `GET /health` remains available for process liveness (non-GraphQL).
 
@@ -346,4 +338,4 @@ HTTP `GET /health` remains available for process liveness (non-GraphQL).
 
 ## 11. Summary
 
-Lumora’s public API is **NestJS GraphQL** with **JWT Bearer** auth. The MVP surface covers multi-provider auth, landmarks-only face analysis orchestration, and recommendation history. FastAPI exposes an internal `/v1/analyze/face` style contract used only by NestJS. The frontend never receives a direct AI API. GraphQL types/inputs for that surface are now declared in NestJS (see Section 9); auth guards and persistence wiring are the next backend steps.
+Lumora’s public API is **NestJS GraphQL** with **JWT Bearer** auth, email confirmation, forgot-password recovery, and a shared VerificationService for sensitive account OTPs. Analysis/history mutations remain next (T-105 / T-106).
