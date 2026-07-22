@@ -2,6 +2,10 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+input AnalyzeFaceInput {
+  landmarks: FaceLandmarkInput!
+}
+
 type AuthPayload {
   accessToken: String!
   refreshToken: String
@@ -13,8 +17,45 @@ A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date
 """
 scalar DateTime
 
+type FaceAnalysisResult {
+  faceShape: FaceShape!
+  id: ID!
+  recommendations: Recommendation!
+}
+
+input FaceLandmarkInput {
+  meta: FaceScanMetaInput
+  points: [LandmarkPointInput!]!
+}
+
+input FaceScanMetaInput {
+  imageHeight: Int
+  imageWidth: Int
+  source: String
+  version: String
+}
+
+"""Fixed face-shape taxonomy (ADR-012)"""
+enum FaceShape {
+  DIAMOND
+  HEART
+  OBLONG
+  OTHER
+  OVAL
+  ROUND
+  SQUARE
+  TRIANGLE
+}
+
 input GoogleLoginInput {
   idToken: String!
+}
+
+input LandmarkPointInput {
+  index: Int
+  x: Float!
+  y: Float!
+  z: Float
 }
 
 input LoginInput {
@@ -23,6 +64,7 @@ input LoginInput {
 }
 
 type Mutation {
+  analyzeFace(input: AnalyzeFaceInput!): FaceAnalysisResult!
   login(input: LoginInput!): AuthPayload!
   loginWithGoogle(input: GoogleLoginInput!): AuthPayload!
   logout: Boolean!
@@ -31,6 +73,33 @@ type Mutation {
 
 type Query {
   me: User!
+  recommendation(id: ID!): Recommendation
+  recommendationHistory(cursor: String, limit: Int = 20): RecommendationConnection!
+}
+
+type Recommendation {
+  category: RecommendationCategory!
+  createdAt: DateTime!
+  faceAnalysisId: ID!
+  faceShape: FaceShape!
+  id: ID!
+  items: [RecommendationItem!]!
+}
+
+enum RecommendationCategory {
+  HAIR
+}
+
+type RecommendationConnection {
+  items: [Recommendation!]!
+  nextCursor: String
+}
+
+type RecommendationItem {
+  description: String
+  key: String
+  score: Float
+  title: String!
 }
 
 input RegisterInput {

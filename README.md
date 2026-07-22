@@ -180,12 +180,15 @@ MONGODB_URI=mongodb://127.0.0.1:27017/lumora
 JWT_SECRET=change-me-to-a-long-random-secret
 JWT_ACCESS_EXPIRES_IN=7d
 GOOGLE_CLIENT_ID=
+AI_SERVICE_URL=http://127.0.0.1:8000
+AI_API_KEY=
+AI_TIMEOUT_MS=15000
 CORS_ORIGINS=http://localhost:3001
 ```
 
 GraphQL endpoint: `http://localhost:3000/graphql` · Health: `GET /health`
 
-Auth mutations: `register`, `login`, `loginWithGoogle`. Protected: `me`, `logout` (Bearer JWT).
+Auth mutations: `register`, `login`, `loginWithGoogle`. Protected: `me`, `logout`, `analyzeFace`, history queries (Bearer JWT).
 
 Generated GraphQL SDL is committed at [`src/schema.gql`](./src/schema.gql) (NestJS `autoSchemaFile`) so the public contract is reviewable without running the app. Do not gitignore it; regenerate by starting the API when schema classes change.
 
@@ -193,14 +196,15 @@ Generated GraphQL SDL is committed at [`src/schema.gql`](./src/schema.gql) (Nest
 
 ## Project Status
 
-Phase 0 docs are complete. Phase 1 engineering is underway (auth shipped). Product decisions live in `docs/`.
+Phase 0 docs are complete. Phase 1 NestJS MVP API (auth + analyzeFace + history) is implemented. Product decisions live in `docs/`.
 
 | Area | Status |
 |---|---|
 | Product definition | Complete (`docs/`) |
 | NestJS project scaffold | Present |
 | Auth (email/password + Google + JWT) | Done |
-| MVP feature implementation | In progress |
+| Analyze + recommendation history | Done (needs `lumora-ai` for real AI) |
+| MVP feature implementation | Backend API ready; AI + frontend remaining |
 | FastAPI AI service | Sibling `lumora-ai` |
 
 ---

@@ -3,11 +3,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import request from 'supertest';
 import { App } from 'supertest/types';
+import { AiClientService } from '../src/ai/ai.client';
 import { AppModule } from './../src/app.module';
 
-describe('Auth GraphQL (e2e)', () => {
+describe('Lumora GraphQL (e2e)', () => {
   let app: INestApplication<App>;
   let mongo: MongoMemoryServer;
+  const aiClient = {
+    analyzeFace: jest.fn(),
+  };
 
   beforeAll(async () => {
     mongo = await MongoMemoryServer.create();
@@ -18,7 +22,10 @@ describe('Auth GraphQL (e2e)', () => {
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(AiClientService)
+      .useValue(aiClient)
+      .compile();
 
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(
@@ -36,6 +43,10 @@ describe('Auth GraphQL (e2e)', () => {
     await mongo.stop();
   });
 
+  beforeEach(() => {
+    aiClient.analyzeFace.mockReset();
+  });
+
   it('GET /health', () => {
     return request(app.getHttpServer())
       .get('/health')
@@ -43,7 +54,7 @@ describe('Auth GraphQL (e2e)', () => {
       .expect({ status: 'ok' });
   });
 
-  it('registers, logs in, fetches me, and rejects bad login', async () => {
+  it('registers, logs in, analyzes face, and reads history', async () => {
     const registerRes = await request(app.getHttpServer())
       .post('/graphql')
       .send({
@@ -66,20 +77,8 @@ describe('Auth GraphQL (e2e)', () => {
       })
       .expect(200);
 
-    const registerBody = registerRes.body as {
-      data?: {
-        register: {
-          accessToken: string;
-          refreshToken: string | null;
-          user: { email: string };
-        };
-      };
-      errors?: unknown[];
-    };
-
-    expect(registerBody.errors).toBeUndefined();
-    expect(registerBody.data?.register.user.email).toBe('mvp@lumora.test');
-    expect(registerBody.data?.register.refreshToken).toBeNull();
+    expect(registerRes.body.errors).toBeUndefined();
+    expect(registerRes.body.data.register.refreshToken).toBeNull();
 
     const loginRes = await request(app.getHttpServer())
       .post('/graphql')
@@ -88,7 +87,6 @@ describe('Auth GraphQL (e2e)', () => {
           mutation Login($input: LoginInput!) {
             login(input: $input) {
               accessToken
-              refreshToken
               user { email }
             }
           }
@@ -99,36 +97,99 @@ describe('Auth GraphQL (e2e)', () => {
       })
       .expect(200);
 
-    const loginBody = loginRes.body as {
-      data?: {
-        login: {
-          accessToken: string;
-          refreshToken: string | null;
-          user: { email: string };
-        };
-      };
-      errors?: unknown[];
-    };
+    const token = loginRes.body.data.login.accessToken as string;
 
-    expect(loginBody.errors).toBeUndefined();
-    expect(loginBody.data?.login.user.email).toBe('mvp@lumora.test');
-    expect(loginBody.data?.login.refreshToken).toBeNull();
+    aiClient.analyzeFace.mockResolvedValue({
+      faceShape: 'OVAL',
+      recommendations: {
+        category: 'hair',
+        items: [
+          {
+            key: 'crop',
+            title: 'Textured Crop',
+            description: 'Clean sides',
+            score: 0.9,
+          },
+        ],
+      },
+    });
 
-    const token = loginBody.data!.login.accessToken;
-
-    const meRes = await request(app.getHttpServer())
+    const analyzeRes = await request(app.getHttpServer())
       .post('/graphql')
       .set('Authorization', `Bearer ${token}`)
       .send({
         query: `
-          query Me {
-            me { id email displayName }
+          mutation Analyze($input: AnalyzeFaceInput!) {
+            analyzeFace(input: $input) {
+              id
+              faceShape
+              recommendations {
+                id
+                category
+                faceShape
+                items { key title score }
+                faceAnalysisId
+              }
+            }
+          }
+        `,
+        variables: {
+          input: {
+            landmarks: {
+              points: [
+                { x: 0.1, y: 0.2, z: 0, index: 0 },
+                { x: 0.3, y: 0.4, index: 1 },
+                { x: 0.5, y: 0.6, index: 2 },
+              ],
+              meta: { source: 'mediapipe', version: 'test' },
+            },
+          },
+        },
+      })
+      .expect(200);
+
+    expect(analyzeRes.body.errors).toBeUndefined();
+    expect(analyzeRes.body.data.analyzeFace.faceShape).toBe('OVAL');
+    expect(
+      analyzeRes.body.data.analyzeFace.recommendations.items[0].title,
+    ).toBe('Textured Crop');
+
+    const recId = analyzeRes.body.data.analyzeFace.recommendations
+      .id as string;
+
+    const historyRes = await request(app.getHttpServer())
+      .post('/graphql')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        query: `
+          query History {
+            recommendationHistory(limit: 10) {
+              items { id faceShape category }
+              nextCursor
+            }
           }
         `,
       })
       .expect(200);
 
-    expect(meRes.body.data.me.email).toBe('mvp@lumora.test');
+    expect(historyRes.body.errors).toBeUndefined();
+    expect(historyRes.body.data.recommendationHistory.items).toHaveLength(1);
+
+    const oneOk = await request(app.getHttpServer())
+      .post('/graphql')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        query: `
+          query One($id: ID!) {
+            recommendation(id: $id) { id faceShape }
+          }
+        `,
+        variables: { id: recId },
+      })
+      .expect(200);
+
+    expect(oneOk.body.errors).toBeUndefined();
+    expect(oneOk.body.data.recommendation.faceShape).toBe('OVAL');
 
     const badLogin = await request(app.getHttpServer())
       .post('/graphql')

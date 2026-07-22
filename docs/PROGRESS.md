@@ -19,13 +19,14 @@ Track what has been completed, what is in progress, and what is blocked. Update 
 |---|---|---|
 | Product documentation set | **Complete (initial)** | All planned `docs/` files + `.cursor/agent.md` |
 | Root README | **Aligned** | Lumora source-of-truth; Nest boilerplate removed |
-| NestJS scaffold | Present | Auth module shipped; analysis/history next |
+| NestJS scaffold | Present | Auth + analyzeFace + history shipped |
 | Auth (email/password + Google + JWT) | **Done (T-101)** | GraphQL `register` / `login` / `loginWithGoogle` / `me` / `logout` |
+| Analyze + history | **Done (T-102…T-107)** | Nest orchestrates AI client; needs running `lumora-ai` for real analyze |
 | FastAPI AI service | Not started in this repo snapshot | Sibling `lumora-ai` |
 | Next.js frontend | Not in this backend-only hosting state | Sibling `lumora-frontend` |
-| MVP end-to-end demo | Not started | Auth ready; analyze pipeline remaining |
+| MVP end-to-end demo | Partial | Backend ready; AI + frontend remaining |
 
-**Overall phase:** Phase 1 (MVP Engineering) in progress — auth complete; next is analysis schema + AI orchestration.
+**Overall phase:** Phase 1 MVP backend API complete in NestJS; next is deploy hardening (Phases 3–5).
 
 ---
 
@@ -73,14 +74,13 @@ User finalized MVP decisions. Docs updated to:
 - Shared OTP for payment + password reset; password policy + session kill
 - Opens: OPEN-021 (Google-only reset UX), OPEN-022 (admin Telegram ops)
 
-### 2026-07-21 — Auth module (T-101)
+### 2026-07-22 — Analyze + history orchestration (T-102…T-107)
 
-- Completed: NestJS GraphQL auth — `register`, `login`, `loginWithGoogle`, `me`, `logout`
-- JWT Bearer guard (`GqlAuthGuard`); MongoDB `users` collection; bcrypt password hashes
-- Google via ID-token verify (`GOOGLE_CLIENT_ID`); account linking by email
-- Access-token-only for now (`refreshToken: null`); OPEN-014 still open
-- Completed: `.env.example` (T-108); users Mongo model (T-103a)
-- Tests: unit covers register/login/`me` + Google happy/fail paths; e2e covers health, register, happy login, `me`, rejected login
+- Completed: GraphQL `analyzeFace`, `recommendationHistory`, `recommendation(id)`
+- Completed: Mongo `face_analyses` + `recommendations`; FastAPI client (`AI_SERVICE_URL`, prod `X-API-KEY`)
+- Completed: landmark contract ADR-025 (closes OPEN-004 for backend)
+- Tests: unit AnalysisService; e2e analyze + history with mocked AI client
+- Note: real face analysis still depends on sibling `lumora-ai` (T-120+)
 
 ---
 
@@ -88,7 +88,7 @@ User finalized MVP decisions. Docs updated to:
 
 | Item | Owner | Notes |
 |---|---|---|
-| T-102 / T-103b | — | GraphQL + Mongo models for analysis/history (`users` already done as T-103a) |
+| Deploy-ready Phases 3–5 | — | Hardening, Docker, CI |
 
 ---
 
@@ -96,7 +96,6 @@ User finalized MVP decisions. Docs updated to:
 
 | Item | Blocker | Reference |
 |---|---|---|
-| Exact landmark JSON field schema | Contract detail | OPEN-004 |
 | Refresh/session UX | Refresh + TTLs | OPEN-014 |
 | Default locale strategy | i18n | OPEN-015 |
 | Account-deletion UX timing | MVP vs fast-follow | OPEN-017 |
@@ -113,6 +112,8 @@ User finalized MVP decisions. Docs updated to:
 | M3 — Orchestration | NestJS `analyzeFace` calls AI and persists history |
 | M4 — Scan UX | Guided scan + MediaPipe + GraphQL submit |
 | M5 — MVP demo | Full checklist in [MVP.md](./MVP.md) Section 4 |
+
+M1 and M3 (Nest side) are done; M2 lives in `lumora-ai`.
 
 ---
 
@@ -131,4 +132,4 @@ User finalized MVP decisions. Docs updated to:
 
 ## 8. Summary
 
-Phase 1 auth is in place. Next progress should cover analysis/history GraphQL + Mongo models, FastAPI client/orchestration, and the AI analyze contract — not Phase 2b monetization.
+NestJS MVP API surface for auth + analyze + history is in place. Next progress in this repo should be production hardening and Docker/CI — not Phase 2b monetization.

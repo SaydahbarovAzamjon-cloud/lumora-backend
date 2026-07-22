@@ -379,11 +379,34 @@ Future versions may add time-based retention policies.
 
 ---
 
+### ADR-025 — MediaPipe landmark GraphQL/AI contract
+
+| Field | Value |
+|---|---|
+| Status | Accepted |
+| Date | 2026-07-22 |
+| Closes | OPEN-004 (backend contract) |
+
+**Context:** NestJS and FastAPI needed a frozen landmarks JSON shape for MVP `analyzeFace`.
+
+**Decision:**
+
+- GraphQL `AnalyzeFaceInput.landmarks` is `FaceLandmarkInput` with `points: [LandmarkPointInput!]!` (min 3) and optional `meta`
+- Each point: `x: Float!`, `y: Float!`, optional `z`, optional `index`
+- Optional meta: `source`, `version`, `imageWidth`, `imageHeight`
+- NestJS forwards the same landmarks object to FastAPI `POST /v1/analyze/face`
+
+**Consequences:**
+
+- Frontend MediaPipe output must be normalized into this shape before GraphQL
+- OPEN-004 closed for backend; AI service must accept the same JSON
+
+---
+
 ## 3. Open Decisions (Remaining)
 
 | ID | Topic | Why it matters |
 |---|---|---|
-| OPEN-004 | Exact MediaPipe landmark JSON field schema | Final GraphQL/FastAPI contract detail |
 | OPEN-010 | Deployment topology (Docker Compose, cloud hosts) | Ops |
 | OPEN-014 | Refresh token yes/no + JWT TTLs | Auth session UX |
 | OPEN-015 | Default locale / language detection | i18n UX |

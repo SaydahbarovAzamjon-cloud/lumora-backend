@@ -158,9 +158,22 @@ type Query {
 Logical signatures:
 
 ```graphql
+input LandmarkPointInput {
+  x: Float!
+  y: Float!
+  z: Float
+  index: Int
+}
+
+input FaceScanMetaInput {
+  source: String
+  version: String
+  imageWidth: Int
+  imageHeight: Int
+}
+
 input FaceLandmarkInput {
-  # Normalized MediaPipe landmark payload — exact shape TBD with frontend/AI
-  points: [LandmarkPointInput!]!
+  points: [LandmarkPointInput!]!   # min 3 points validated by Nest
   meta: FaceScanMetaInput
 }
 
@@ -177,6 +190,7 @@ type Mutation {
 }
 
 # GoogleLoginInput { idToken: String! } — frontend Google ID token; NestJS verifies.
+# Landmark contract: ADR-025 (closes OPEN-004 for backend ↔ AI).
 ```
 
 ### 3.6 `analyzeFace` behavior contract
@@ -303,8 +317,8 @@ Auth mutations cover email register/login plus Google OAuth. Kakao and phone are
 
 | Decision | Status |
 |---|---|
-| Exact MediaPipe landmark GraphQL input shape | OPEN-004 |
-| Pagination style (`cursor` vs `offset`) | Open |
+| Exact MediaPipe landmark GraphQL input shape | **Closed — ADR-025** |
+| Pagination style | Cursor on `recommendationHistory` (implemented) |
 | Refresh token strategy / TTLs | OPEN-014 |
 | GraphQL playground exposure in production | Open (default recommendation: disabled in prod) |
 | OAuth callback / redirect details | Open (implementation) |

@@ -10,24 +10,28 @@ O‘qiyotganda har doim buni tasavvur qil:
 
 Har faylda:
 
-1. **Big picture** — qayerdasan (qaysi quti)
-2. **Muammo** — nima uchun bu quti kerak
-3. **Oqim** — so‘rov qanday yuradi (sequence)
-4. **Qismlar** — kim nima qiladi
-5. **Kod ankori** — real fayl/method
-6. **Summary** — 3 jumlada eslab qol
+1. **Nima uchun bor**
+2. **Qanday muammo**
+3. **Workflow**
+4. **Controller / Service**
+5. **Muhim methodlar / kod**
+6. **Summary**
 
-**O‘qish tartibi (majburiy):**
+---
+
+## O‘qish tartibi
 
 | # | Fayl | System design savoli |
 |---|---|---|
-| 0 | [00-platform.md](./00-platform.md) | Butun tizim qanday qutilarga bo‘lingan? |
-| 1 | [01-app-bootstrap.md](./01-app-bootstrap.md) | Process qanday start bo‘ladi? |
-| 2 | [02-users.md](./02-users.md) | Identity qayerda saqlanadi? |
-| 3 | [03-auth.md](./03-auth.md) | Trust qanday hosil bo‘ladi? |
-| 4 | [04-health.md](./04-health.md) | Ops tizimni qanday kuzatadi? |
+| 0 | [00-platform.md](./00-platform.md) | Butun tizim qutilari? |
+| 1 | [01-app-bootstrap.md](./01-app-bootstrap.md) | Process qanday start? |
+| 2 | [02-users.md](./02-users.md) | Identity qayerda? |
+| 3 | [03-auth.md](./03-auth.md) | Trust qanday? |
+| 4 | [04-health.md](./04-health.md) | Ops qanday kuzatadi? |
+| 5 | [05-analysis.md](./05-analysis.md) | Analyze orkestratsiyasi? |
+| 6 | [06-ai-client.md](./06-ai-client.md) | Nest → AI eshigi? |
+| 7 | [07-history.md](./07-history.md) | History qanday himoyalangan? |
 
-Keyingi phase’larda: analysis → AI client → history → docker/ci.
+**Keyingi (Phase 3+):** hardening, docker, ci.
 
-Texnik English docs: [`../`](../) — source of truth.  
-Bu papka: **o‘rganish + system design tasavvuri**.
+Texnik English docs: [`../`](../).
