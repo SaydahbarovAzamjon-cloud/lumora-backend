@@ -19,12 +19,14 @@ Track what has been completed, what is in progress, and what is blocked. Update 
 |---|---|---|
 | Product documentation set | **Complete (initial)** | All planned `docs/` files + `.cursor/agent.md` |
 | Root README | **Aligned** | Lumora source-of-truth; Nest boilerplate removed |
-| NestJS scaffold | Present | Feature modules for MVP not complete |
-| FastAPI AI service | Not started in this repo snapshot | Planned as `apps/ai` |
-| Next.js frontend | Not in this backend-only hosting state | Planned as `apps/web` |
-| MVP end-to-end demo | Not started | Blocked on implementation + open decisions |
+| NestJS scaffold | Present | Auth + analyzeFace + history shipped |
+| Auth (email/password + Google + JWT) | **Done (T-101)** | GraphQL `register` / `login` / `loginWithGoogle` / `me` / `logout` |
+| Analyze + history | **Done (T-102…T-107)** | Nest orchestrates AI client; needs running `lumora-ai` for real analyze |
+| FastAPI AI service | Not started in this repo snapshot | Sibling `lumora-ai` |
+| Next.js frontend | Not in this backend-only hosting state | Sibling `lumora-frontend` |
+| MVP end-to-end demo | Partial | Backend ready; AI + frontend remaining |
 
-**Overall phase:** Phase 0 (Documentation) complete → Phase 1 (MVP Engineering) ready to start.
+**Overall phase:** Phase 1 MVP backend API complete in NestJS; next is deploy hardening (Phases 3–5).
 
 ---
 
@@ -57,11 +59,36 @@ User finalized MVP decisions. Docs updated to:
 
 ---
 
+### 2026-07-20 — Monetization strategy documented
+
+- Completed: `docs/MONETIZATION.md` (Guest → Free credits → Pro, paywalls, Makeover)
+- Decisions made: **ADR-022** freemium + unified credit wallet
+- Updated: README index, PROJECT, MVP, ROADMAP (Phase 2b), TASKS, DECISIONS opens OPEN-018…020
+- Note: Monetization remains **post-MVP**; guest “selfie upload” wording reconciled to landmarks-only (ADR-011)
+- Clarified schema: **Guest ≠ User**; accounts use `plan: FREE | PRO` (not `UserType = GUEST|USER|PRO`)
+
+### 2026-07-20 — Mock payments + shared verification documented
+
+- Completed: `docs/PAYMENTS.md` (ADR-023), `docs/VERIFICATION.md` (ADR-024)
+- Mock checkout: pricing → card → OTP → Pro → invoice → admin Telegram
+- Shared OTP for payment + password reset; password policy + session kill
+- Opens: OPEN-021 (Google-only reset UX), OPEN-022 (admin Telegram ops)
+
+### 2026-07-22 — Analyze + history orchestration (T-102…T-107)
+
+- Completed: GraphQL `analyzeFace`, `recommendationHistory`, `recommendation(id)`
+- Completed: Mongo `face_analyses` + `recommendations`; FastAPI client (`AI_SERVICE_URL`, prod `X-API-KEY`)
+- Completed: landmark contract ADR-025 (closes OPEN-004 for backend)
+- Tests: unit AnalysisService; e2e analyze + history with mocked AI client
+- Note: real face analysis still depends on sibling `lumora-ai` (T-120+)
+
+---
+
 ## 4. In Progress
 
 | Item | Owner | Notes |
 |---|---|---|
-| — | — | Ready for Phase 1 engineering |
+| Deploy-ready Phases 3–5 | — | Hardening, Docker, CI |
 
 ---
 
@@ -69,7 +96,6 @@ User finalized MVP decisions. Docs updated to:
 
 | Item | Blocker | Reference |
 |---|---|---|
-| Exact landmark JSON field schema | Contract detail | OPEN-004 |
 | Refresh/session UX | Refresh + TTLs | OPEN-014 |
 | Default locale strategy | i18n | OPEN-015 |
 | Account-deletion UX timing | MVP vs fast-follow | OPEN-017 |
@@ -86,6 +112,8 @@ User finalized MVP decisions. Docs updated to:
 | M3 — Orchestration | NestJS `analyzeFace` calls AI and persists history |
 | M4 — Scan UX | Guided scan + MediaPipe + GraphQL submit |
 | M5 — MVP demo | Full checklist in [MVP.md](./MVP.md) Section 4 |
+
+M1 and M3 (Nest side) are done; M2 lives in `lumora-ai`.
 
 ---
 
@@ -104,4 +132,4 @@ User finalized MVP decisions. Docs updated to:
 
 ## 8. Summary
 
-Documentation Phase 0 is complete. Engineering Phase 1 has not started. The next meaningful progress entries should reflect auth, AI contract, orchestration, and frontend scan integration — not new out-of-scope features.
+NestJS MVP API surface for auth + analyze + history is in place. Next progress in this repo should be production hardening and Docker/CI — not Phase 2b monetization.

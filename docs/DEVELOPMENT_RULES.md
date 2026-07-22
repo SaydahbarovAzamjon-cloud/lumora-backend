@@ -107,8 +107,11 @@ See [TASKS.md](./TASKS.md).
 | GraphQL/AI contracts | `API.md`, `AI.md` |
 | Collections/fields | `DATABASE.md` |
 | Completed work | `PROGRESS.md`, `TASKS.md` |
+| New module / deploy phase | `docs/learning/*.md` (Uzbek; system-design sections) |
 
 Do not leave docs knowingly wrong.
+
+**Learning docs (UZ):** each module file must follow: why → problem → workflow → controller/service → important code → summary. Update `docs/learning/README.md` order when adding files.
 
 ---
 

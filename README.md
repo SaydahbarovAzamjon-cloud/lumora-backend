@@ -85,8 +85,10 @@ These are **out of scope for MVP**:
 - Virtual try-on
 - Chat
 - Color analysis
+- Guest → Free credits → Lumora Pro monetization ([`docs/MONETIZATION.md`](./docs/MONETIZATION.md))
+- Mock Pro checkout + shared OTP / password recovery ([`docs/PAYMENTS.md`](./docs/PAYMENTS.md), [`docs/VERIFICATION.md`](./docs/VERIFICATION.md))
 
-See [`docs/ROADMAP.md`](./docs/ROADMAP.md) once published.
+See [`docs/ROADMAP.md`](./docs/ROADMAP.md).
 
 ---
 
@@ -107,7 +109,7 @@ Backend concerns for MVP include authentication, accepting scan/landmark payload
 
 ## Documentation
 
-Authoritative project documentation will live in `docs/`:
+Authoritative project documentation lives in `docs/`:
 
 ```text
 docs/
@@ -122,15 +124,18 @@ docs/
 ├── CODING_STANDARDS.md
 ├── DEVELOPMENT_RULES.md
 ├── ROADMAP.md
+├── MONETIZATION.md
+├── PAYMENTS.md
+├── VERIFICATION.md
 ├── DECISIONS.md
 ├── TASKS.md
 ├── PROGRESS.md
 └── README.md
 ```
 
-Agent guidance: [`.cursor/agent.md`](./.cursor/agent.md) (to be added with the documentation set).
+Agent guidance: [`.cursor/agent.md`](./.cursor/agent.md).
 
-Start with [`docs/PROJECT.md`](./docs/PROJECT.md) after it is approved and published.
+Start with [`docs/README.md`](./docs/README.md).
 
 ---
 
@@ -167,28 +172,40 @@ npm run start:dev
 
 ### Environment
 
-Create a `.env` file in the repository root. At minimum for local backend work:
+Copy [`.env.example`](./.env.example) to `.env` and fill in values:
 
 ```env
-PORT=4000
-MONGODB_URI=
-JWT_SECRET=
+PORT=3000
+MONGODB_URI=mongodb://127.0.0.1:27017/lumora
+JWT_SECRET=change-me-to-a-long-random-secret
+JWT_ACCESS_EXPIRES_IN=7d
+GOOGLE_CLIENT_ID=
+AI_SERVICE_URL=http://127.0.0.1:8000
+AI_API_KEY=
+AI_TIMEOUT_MS=15000
+CORS_ORIGINS=http://localhost:3001
 ```
 
-Additional environment variables for AI service URLs, auth providers, and deployment will be documented in [`docs/`](./docs/) as those decisions are recorded.
+GraphQL endpoint: `http://localhost:3000/graphql` · Health: `GET /health`
+
+Auth mutations: `register`, `login`, `loginWithGoogle`. Protected: `me`, `logout`, `analyzeFace`, history queries (Bearer JWT).
+
+Generated GraphQL SDL is committed at [`src/schema.gql`](./src/schema.gql) (NestJS `autoSchemaFile`) so the public contract is reviewable without running the app. Do not gitignore it; regenerate by starting the API when schema classes change.
 
 ---
 
 ## Project Status
 
-Documentation is being established **before** full implementation. Product and architecture decisions are recorded in `docs/`; do not treat older README drafts or StyleAI brainstorming as authoritative when they conflict with Lumora docs.
+Phase 0 docs are complete. Phase 1 NestJS MVP API (auth + analyzeFace + history) is implemented. Product decisions live in `docs/`.
 
 | Area | Status |
 |---|---|
-| Product definition | In progress (`docs/`) |
+| Product definition | Complete (`docs/`) |
 | NestJS project scaffold | Present |
-| MVP feature implementation | Not complete |
-| FastAPI AI service | Separate service; not in this README’s runtime steps |
+| Auth (email/password + Google + JWT) | Done |
+| Analyze + recommendation history | Done (needs `lumora-ai` for real AI) |
+| MVP feature implementation | Backend API ready; AI + frontend remaining |
+| FastAPI AI service | Sibling `lumora-ai` |
 
 ---
 

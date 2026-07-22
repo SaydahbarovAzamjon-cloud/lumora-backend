@@ -36,7 +36,10 @@ Executable backlog for Lumora. Tasks are grouped by phase and surface. This is a
 | T-014 | Write `docs/PROGRESS.md` | done | |
 | T-015 | Write `docs/README.md` | done | |
 | T-016 | Write `.cursor/agent.md` | done | |
-| T-017 | Resolve remaining opens (OPEN-004, 010, 014, 015, 017) as needed | todo | See DECISIONS.md |
+| T-017 | Resolve remaining opens (OPEN-010, 014, 015, 017) as needed | todo | OPEN-004 closed (ADR-025); see DECISIONS.md |
+| T-018 | Write `docs/MONETIZATION.md` + ADR-022 | done | Guest → Free → Pro |
+| T-019 | Write `docs/PAYMENTS.md` + ADR-023 | done | Mock checkout |
+| T-020 | Write `docs/VERIFICATION.md` + ADR-024 | done | Shared OTP + password reset |
 
 ---
 
@@ -47,14 +50,15 @@ Executable backlog for Lumora. Tasks are grouped by phase and surface. This is a
 | ID | Task | Status | Depends on |
 |---|---|---|---|
 | T-100 | Auth approach decided (email/password + Google + JWT Bearer) | done | ADR-009, ADR-010 |
-| T-101 | Implement auth module (email/password + Google + JWT Bearer guards) | todo | T-100 |
-| T-102 | Define GraphQL schema for user/analysis/history | todo | T-100, OPEN-004 |
-| T-103 | Implement MongoDB models for users/analyses/recommendations | todo | DATABASE.md |
-| T-104 | Implement FastAPI client in NestJS (`X-API-KEY` in production) | todo | ADR-019 |
-| T-105 | Implement `analyzeFace` orchestration + persistence | todo | T-102, T-103, T-104, T-120 |
-| T-106 | Implement recommendation history queries | todo | T-103, T-105 |
-| T-107 | Map AI/upstream errors to safe GraphQL errors | todo | T-105 |
-| T-108 | Add `.env.example` for API | todo | |
+| T-101 | Implement auth module (email/password + Google + JWT Bearer guards) | done | T-100 |
+| T-102 | Define GraphQL schema for user/analysis/history | done | T-100; OPEN-004 closed via ADR-025 |
+| T-103a | Implement MongoDB model for users | done | DATABASE.md; shipped with T-101 |
+| T-103b | Implement MongoDB models for face_analyses + recommendations | done | DATABASE.md |
+| T-104 | Implement FastAPI client in NestJS (`X-API-KEY` in production) | done | ADR-019 |
+| T-105 | Implement `analyzeFace` orchestration + persistence | done | T-102, T-103b, T-104 (AI service T-120 still sibling) |
+| T-106 | Implement recommendation history queries | done | T-103b, T-105 |
+| T-107 | Map AI/upstream errors to safe GraphQL errors | done | T-105 |
+| T-108 | Add `.env.example` for API | done | includes AI_SERVICE_URL / AI_API_KEY |
 
 ### 3.2 AI (`apps/ai` / FastAPI)
 
@@ -62,7 +66,7 @@ Executable backlog for Lumora. Tasks are grouped by phase and surface. This is a
 |---|---|---|---|
 | T-120 | Create FastAPI service skeleton + `/health` | todo | |
 | T-121 | Decide model/rules approach for face shape | todo | OPEN-006 related / model open |
-| T-122 | Implement `POST /v1/analyze/face` | todo | T-120, OPEN-004 |
+| T-122 | Implement `POST /v1/analyze/face` | todo | T-120, ADR-025 |
 | T-123 | Return hair recommendation items for MVP | todo | T-122 |
 | T-124 | Contract tests for success + validation errors | todo | T-122 |
 
@@ -97,11 +101,24 @@ Do not pull these into Phase 1 unless scope is explicitly changed via ADR:
 | T-200 | Glasses recommendation | 2 |
 | T-201 | Beard recommendation | 2 |
 | T-202 | Color analysis | 2 |
+| T-210 | Guest one-hairstyle preview + account paywall | 2b |
+| T-211 | Free credit wallet (grant 10/mo, debit on generate) | 2b |
+| T-212 | Credit cost table + NestJS entitlement checks | 2b |
+| T-213 | Lumora Pro subscription + Pro paywall | 2b |
+| T-214 | AI Complete Makeover (Pro-only) | 2b |
+| T-215 | HD export / watermark rules by tier | 2b |
+| T-216 | MockPaymentProvider + checkout GraphQL | 2b |
+| T-217 | SubscriptionService + InvoiceService | 2b |
+| T-218 | VerificationService (shared OTP) | 2b |
+| T-219 | Forgot password + session invalidation | 2b |
+| T-220 | Admin Telegram notifications (payment + password reset) | 2b |
 | T-300 | Outfit recommendation | 3 |
 | T-301 | Wardrobe | 3 |
 | T-302 | Shopping | 3 |
 | T-400 | Virtual try-on | 4 |
 | T-401 | Chat | 4 |
+
+Monetization details: [MONETIZATION.md](./MONETIZATION.md) · [PAYMENTS.md](./PAYMENTS.md) · [VERIFICATION.md](./VERIFICATION.md) · ADR-022…024. Pricing amounts still open (OPEN-018).
 
 ---
 
@@ -116,4 +133,4 @@ Do not pull these into Phase 1 unless scope is explicitly changed via ADR:
 
 ## 6. Summary
 
-Phase 0 documentation tasks are complete. Phase 1 implementation starts with auth decisions, FastAPI analyze contract, NestJS orchestration, MediaPipe scan UX, and history — in that architectural spirit.
+Phase 0 documentation is complete. Phase 1 backend MVP API for auth + analyzeFace + history is implemented in NestJS (T-101…T-108). FastAPI analyze implementation remains in sibling `lumora-ai` (T-120+). Next for this repo: production hardening + Docker + CI (deploy-ready Phases 3–5).

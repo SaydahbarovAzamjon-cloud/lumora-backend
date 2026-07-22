@@ -94,11 +94,12 @@ Supports MVP auth (ADR-009): email/password and Google OAuth only.
 | Field | Type (logical) | Required | Notes |
 |---|---|---|---|
 | `_id` | ObjectId | Yes | Primary key |
-| `email` | string | Conditional | Required for email/password; typically present for Google users |
+| `email` | string | Yes (MVP) | Required for all accounts in MVP (email/password + Google verified email). Nest schema enforces unique + required. |
 | `passwordHash` | string | Conditional | Only for email/password users; never plaintext |
 | `providers` | array\<object\> | Yes | Linked identities, e.g. `{ type: "google", subject: "..." }` |
 | `displayName` | string | No | Optional profile label |
 | `locale` | string | No | Preferred UI locale: `en` \| `ko` \| `uz` |
+| `plan` | string enum | **Post-MVP** | `FREE` \| `PRO` (ADR-022). **Not in MVP.** Default `FREE` when monetization ships. Guests are **not** users — no `GUEST` value here. |
 | `createdAt` | datetime | Yes | |
 | `updatedAt` | datetime | Yes | |
 
@@ -114,9 +115,10 @@ Supports MVP auth (ADR-009): email/password and Google OAuth only.
 
 | Index | Fields | Reason |
 |---|---|---|
-| Unique sparse | `email` | Email login |
+| Unique | `email` | Email login (required in MVP; not sparse) |
 | Unique compound | `providers.type` + `providers.subject` | Google account linking |
 | | `createdAt` | Ops / support queries |
+| | `plan` | Post-MVP entitlement queries |
 
 ### 5.2 `face_analyses`
 
@@ -249,8 +251,21 @@ Hairstyle catalog is **not** a MongoDB collection in MVP — it is **static JSON
 | Outfit | `outfits` |
 | Shopping | `products`, `orders` (if first-party) |
 | Chat | `conversations`, `messages` |
+| Monetization (ADR-022…024) | `users.plan` (`FREE` \| `PRO`); `payments`, `subscriptions`, `invoices`, `credit_wallets`, `credit_transactions`, `verification_challenges` |
 
-These must not appear as MVP blockers.
+**Access tiers vs user plan (do not confuse):**
+
+| Value | Persisted on `users`? | Meaning |
+|---|---|---|
+| `GUEST` | **No** | Unauthenticated; ephemeral session only |
+| `FREE` | Yes (`plan`) | Registered account with monthly credits |
+| `PRO` | Yes (`plan`) | Active Pro subscription |
+
+Do **not** use `UserType = GUEST | USER | PRO_USER`. See [MONETIZATION.md](./MONETIZATION.md) §8.1.
+
+Payment status machine and OTP rules: [PAYMENTS.md](./PAYMENTS.md), [VERIFICATION.md](./VERIFICATION.md).
+
+These must not appear as MVP blockers. Monetization model: [MONETIZATION.md](./MONETIZATION.md).
 
 ---
 

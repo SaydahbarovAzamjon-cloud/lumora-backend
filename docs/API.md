@@ -86,7 +86,14 @@ type User {
   email: String
   displayName: String
   createdAt: DateTime!
+  # Post-MVP (ADR-022 / MONETIZATION.md) — not required for MVP:
+  # plan: UserPlan!
+  # creditsRemaining: Int
 }
+
+# Post-MVP monetization enums (not required for MVP schema):
+# enum UserPlan { FREE PRO }
+# enum AccessTier { GUEST FREE PRO }  # runtime only; GUEST is never on User
 
 type RecommendationItem {
   key: String
@@ -119,6 +126,8 @@ type AuthPayload {
 
 > Exact `FaceShape` enum values are product/AI decisions and may be adjusted when the AI taxonomy is finalized in [AI.md](./AI.md) / [DECISIONS.md](./DECISIONS.md).
 
+> **Monetization note:** Guest is not a GraphQL `User`. Authenticated users get `plan: FREE | PRO` when Phase 2b ships. See [MONETIZATION.md](./MONETIZATION.md) §8.1.
+
 ### 3.4 Suggested queries
 
 | Query | Auth | Purpose |
@@ -143,15 +152,28 @@ type Query {
 |---|---|---|
 | `register` | Public | Create account |
 | `login` | Public | Obtain tokens / session |
-| `logout` | Required | Invalidate session/refresh if applicable |
+| `logout` | Required | MVP: client must discard the access token (server returns `true`). Server-side revoke/refresh invalidation awaits OPEN-014. |
 | `analyzeFace` | Required | Submit landmarks/scan payload; run AI; persist; return result |
 
 Logical signatures:
 
 ```graphql
+input LandmarkPointInput {
+  x: Float!
+  y: Float!
+  z: Float
+  index: Int
+}
+
+input FaceScanMetaInput {
+  source: String
+  version: String
+  imageWidth: Int
+  imageHeight: Int
+}
+
 input FaceLandmarkInput {
-  # Normalized MediaPipe landmark payload — exact shape TBD with frontend/AI
-  points: [LandmarkPointInput!]!
+  points: [LandmarkPointInput!]!   # min 3 points validated by Nest
   meta: FaceScanMetaInput
 }
 
@@ -162,9 +184,13 @@ input AnalyzeFaceInput {
 type Mutation {
   register(input: RegisterInput!): AuthPayload!
   login(input: LoginInput!): AuthPayload!
+  loginWithGoogle(input: GoogleLoginInput!): AuthPayload!
   logout: Boolean!
   analyzeFace(input: AnalyzeFaceInput!): FaceAnalysisResult!
 }
+
+# GoogleLoginInput { idToken: String! } — frontend Google ID token; NestJS verifies.
+# Landmark contract: ADR-025 (closes OPEN-004 for backend ↔ AI).
 ```
 
 ### 3.6 `analyzeFace` behavior contract
@@ -291,8 +317,8 @@ Auth mutations cover email register/login plus Google OAuth. Kakao and phone are
 
 | Decision | Status |
 |---|---|
-| Exact MediaPipe landmark GraphQL input shape | OPEN-004 |
-| Pagination style (`cursor` vs `offset`) | Open |
+| Exact MediaPipe landmark GraphQL input shape | **Closed — ADR-025** |
+| Pagination style | Cursor on `recommendationHistory` (implemented) |
 | Refresh token strategy / TTLs | OPEN-014 |
 | GraphQL playground exposure in production | Open (default recommendation: disabled in prod) |
 | OAuth callback / redirect details | Open (implementation) |

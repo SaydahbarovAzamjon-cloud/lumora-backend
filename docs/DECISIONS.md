@@ -299,15 +299,123 @@ Future versions may add time-based retention policies.
 
 ---
 
+### ADR-022 — Freemium monetization: Guest → Free credits → Pro
+
+| Field | Value |
+|---|---|
+| Status | Accepted |
+| Date | 2026-07-20 |
+| Spec | [MONETIZATION.md](./MONETIZATION.md) |
+
+**Context:** Lumora needs a conversion model that lets users experience AI quality before paying, then scales generation access without per-feature hard caps.
+
+**Decision:**
+
+| Tier | Access |
+|---|---|
+| **Guest** | One hairstyle preview after face analysis; then lock → Create Free Account |
+| **Free** | 10 AI Credits / month; unified credit wallet (hair/glasses/beard/hat/palette = 1; outfit = 2) |
+| **Pro** | Unlimited credits; HD / no watermark; priority queue; **AI Complete Makeover** exclusive |
+
+**Consequences:**
+
+- Monetization is **post-MVP** (does not expand ADR-007)
+- NestJS owns entitlement + credit debit before FastAPI calls
+- Guest preview uses the **landmarks-only** pipeline (ADR-011) — no selfie upload
+- **Do not** model `UserType = GUEST | USER | PRO`. Guest is unauthenticated (no `users` row). Authenticated accounts use `plan: FREE | PRO`; NestJS derives runtime `AccessTier` (`GUEST` \| `FREE` \| `PRO`)
+- Credit costs and paywall copy live in [MONETIZATION.md](./MONETIZATION.md)
+- New AI features add a credit cost row; Pro exclusivity only when explicitly decided
+
+---
+
+### ADR-023 — Mock payment provider for Pro checkout
+
+| Field | Value |
+|---|---|
+| Status | Accepted |
+| Date | 2026-07-20 |
+| Spec | [PAYMENTS.md](./PAYMENTS.md) |
+| Depends on | ADR-022, ADR-024 |
+
+**Context:** Portfolio and monetization demos need a full SaaS-like checkout without a real PSP.
+
+**Decision:**
+
+- Implement a **MockPaymentProvider** behind `IPaymentProvider`
+- Full flow: pricing → mock card → OTP (VerificationService) → subscription → invoice → admin Telegram
+- Payment statuses: `CREATED` → `PENDING_VERIFICATION` → `VERIFIED` → `SUCCESS` (plus `FAILED` / `CANCELLED`)
+- `PaymentService` never sends messages directly — events / ports to Verification + Notification + Subscription + Invoice services
+- Later swap Mock for Stripe / Toss / KakaoPay / PayPal without rewriting plan/subscription logic
+
+**Consequences:**
+
+- Belongs to **Phase 2b monetization MVP**, not Phase 1 hair MVP (ADR-007)
+- Do not store raw PAN/CVV
+- Checkout requires authenticated user (Guest converts to Free first)
+
+---
+
+### ADR-024 — Shared VerificationService (OTP)
+
+| Field | Value |
+|---|---|
+| Status | Accepted |
+| Date | 2026-07-20 |
+| Spec | [VERIFICATION.md](./VERIFICATION.md) |
+
+**Context:** Payment and password recovery both need OTP; duplicating stacks creates inconsistent security.
+
+**Decision:**
+
+- One **VerificationService** for payment, password reset, email verify, 2FA, and other sensitive actions
+- OTP: **6 digits**, **2 min** expiry, **5** attempts, one active challenge per `userId`+`purpose`, resend invalidates prior
+- Channel auto-selected from auth provider (MVP: email + Google email; future: Telegram/SMS/Kakao/…)
+- Forgot-password: strong password policy; invalidate all sessions; admin Telegram on success
+
+**Consequences:**
+
+- Payment and Auth modules call VerificationService — they do not send OTP themselves
+- MVP login providers unchanged (ADR-009); router is future-ready
+
+---
+
+### ADR-025 — MediaPipe landmark GraphQL/AI contract
+
+| Field | Value |
+|---|---|
+| Status | Accepted |
+| Date | 2026-07-22 |
+| Closes | OPEN-004 (backend contract) |
+
+**Context:** NestJS and FastAPI needed a frozen landmarks JSON shape for MVP `analyzeFace`.
+
+**Decision:**
+
+- GraphQL `AnalyzeFaceInput.landmarks` is `FaceLandmarkInput` with `points: [LandmarkPointInput!]!` (min 3) and optional `meta`
+- Each point: `x: Float!`, `y: Float!`, optional `z`, optional `index`
+- Optional meta: `source`, `version`, `imageWidth`, `imageHeight`
+- NestJS forwards the same landmarks object to FastAPI `POST /v1/analyze/face`
+
+**Consequences:**
+
+- Frontend MediaPipe output must be normalized into this shape before GraphQL
+- OPEN-004 closed for backend; AI service must accept the same JSON
+
+---
+
 ## 3. Open Decisions (Remaining)
 
 | ID | Topic | Why it matters |
 |---|---|---|
-| OPEN-004 | Exact MediaPipe landmark JSON field schema | Final GraphQL/FastAPI contract detail |
 | OPEN-010 | Deployment topology (Docker Compose, cloud hosts) | Ops |
 | OPEN-014 | Refresh token yes/no + JWT TTLs | Auth session UX |
 | OPEN-015 | Default locale / language detection | i18n UX |
 | OPEN-017 | Account-deletion UX timing (MVP vs fast-follow) | Completes ADR-020 operationally |
+| OPEN-018 | Pro list prices (monthly/annual amounts) + currency | Mock checkout display; real PSP later |
+| OPEN-019 | Free credit reset policy (calendar month vs rolling 30 days) | Wallet refill semantics |
+| OPEN-020 | Guest abuse controls (rate limit / fingerprint) | Protect one-preview fairness |
+| OPEN-021 | Google-only accounts: forgot-password sets local password vs Google-only sign-in | Password recovery UX |
+| OPEN-022 | Admin Telegram bot token / chat id ops setup | Payment + password-reset alerts |
 
 ---
 
@@ -324,6 +432,10 @@ Future versions may add time-based retention policies.
 | Kakao OAuth in MVP | Rejected for MVP | ADR-009 |
 | Native mobile apps in MVP | Rejected for MVP | ADR-015 |
 | MongoDB hairstyle catalog in MVP | Deferred | ADR-021 (static JSON now) |
+| Payments / subscriptions in MVP | Deferred to Phase 2b | ADR-022 / ADR-023 (mock provider) |
+| Per-feature Free caps instead of credits | Rejected | ADR-022 prefers unified wallet |
+| Real bank/PSP in monetization MVP | Rejected for now | ADR-023 mock provider |
+| PaymentService sending OTP/Telegram directly | Rejected | ADR-023 / ADR-024 |
 
 ---
 
@@ -347,3 +459,7 @@ Future versions may add time-based retention policies.
 ## 6. Summary
 
 Final MVP decisions: Email/Password + Google + JWT Bearer; landmarks-only JSON; fixed face-shape catalog; hybrid hair recs matched to **static JSON** catalog; men-only; web + mobile web; `en`/`ko`/`uz`; no Redis/BullMQ; multi-repo (`lumora-backend`, `lumora-frontend`, `lumora-ai`); NestJS↔FastAPI private network (prod adds `X-API-KEY`); retain data until account deletion.
+
+Post-MVP monetization (ADR-022): **Guest → Free (10 credits/mo) → Pro**, unified credit wallet, Complete Makeover Pro-only — see [MONETIZATION.md](./MONETIZATION.md).
+
+Mock Pro checkout (ADR-023) + shared OTP VerificationService (ADR-024) — see [PAYMENTS.md](./PAYMENTS.md) and [VERIFICATION.md](./VERIFICATION.md).

@@ -101,6 +101,30 @@ flowchart TB
 |---|---|
 | Refresh token strategy + JWT TTLs | OPEN-014 |
 | MFA | Out of MVP unless later decided |
+| Google-only forgot-password UX | OPEN-021 |
+
+### 4.6 Shared verification & password recovery (Phase 2b)
+
+See [VERIFICATION.md](./VERIFICATION.md) · ADR-024.
+
+| Control | Rule |
+|---|---|
+| OTP | 6 digits; 2 min expiry; max 5 attempts; one active per user+purpose |
+| Storage | Prefer hashed OTP; never log codes |
+| Password policy | Min 8; upper + lower + digit + special |
+| After reset | Invalidate all sessions/refresh tokens; force re-login; audit + admin Telegram |
+| Channels | MVP: email / Google email; PaymentService must not send OTP itself |
+
+### 4.7 Mock payments (Phase 2b)
+
+See [PAYMENTS.md](./PAYMENTS.md) · ADR-023.
+
+| Control | Rule |
+|---|---|
+| No real PSP | Mock provider only until a real gateway is chosen |
+| Card data | Do not store PAN/CVV; last4/brand only if needed |
+| Entitlements | Only NestJS activates `plan=PRO` after verified SUCCESS |
+| Admin alerts | Telegram via NotificationService (OPEN-022) |
 
 ---
 
@@ -200,4 +224,4 @@ See also [DEVELOPMENT_RULES.md](./DEVELOPMENT_RULES.md) and [CODING_STANDARDS.md
 
 ## 12. Summary
 
-Lumora security: **public GraphQL on NestJS**, **private FastAPI**, MongoDB behind NestJS; **JWT Bearer**; auth = **email/password + Google**; **landmarks-only**; prod AI calls require **`X-API-KEY`**; data retained until **account deletion**.
+Lumora security: **public GraphQL on NestJS**, **private FastAPI**, MongoDB behind NestJS; **JWT Bearer**; auth = **email/password + Google**; **landmarks-only**; prod AI calls require **`X-API-KEY`**; data retained until **account deletion**. Phase 2b adds mock payments + shared OTP verification without storing raw card data.
