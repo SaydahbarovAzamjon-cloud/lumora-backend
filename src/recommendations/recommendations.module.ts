@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { RecommendationsService } from './recommendations.service';
 import {
   Recommendation,
   RecommendationSchema,
@@ -11,6 +12,7 @@ import {
       { name: Recommendation.name, schema: RecommendationSchema },
     ]),
   ],
-  exports: [MongooseModule],
+  providers: [RecommendationsService],
+  exports: [MongooseModule, RecommendationsService],
 })
 export class RecommendationsModule {}

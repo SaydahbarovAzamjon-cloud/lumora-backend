@@ -274,14 +274,17 @@ This section explains how the logical model above maps to code in `lumora-backen
 | History indexes | `{ userId, createdAt: -1 }` on analyses and recommendations |
 | Modules | `UsersModule`, `FaceAnalysesModule`, `RecommendationsModule` register schemas via `MongooseModule.forFeature` |
 
-### What this phase does **not** include yet
+### Implementation status
 
-- Auth services / JWT issuance (T-101)
-- Writing analyses/recommendations from `analyzeFace` (T-105)
-- History resolver logic (T-106)
-- `refresh_tokens` collection (OPEN-014)
+| Concern | Status |
+|---|---|
+| Auth services / JWT issuance (T-101) | Done |
+| Writing analyses/recommendations from `analyzeFace` (T-105) | Done (`AnalyzeFaceService`) |
+| History resolver logic (T-106) | Done (`RecommendationsService`) |
+| FastAPI client (T-104) | Done (`AiService`) |
+| `refresh_tokens` collection (OPEN-014) | Not created |
 
-Env bootstrap: see root `.env.example` (`MONGODB_URI`).
+Env bootstrap: see root `.env.example` (`MONGODB_URI`, `AI_BASE_URL`, `AI_MOCK`).
 
 ---
 

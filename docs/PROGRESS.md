@@ -18,52 +18,37 @@ Track what has been completed, what is in progress, and what is blocked. Update 
 | Area | Status | Notes |
 |---|---|---|
 | Product documentation set | **Complete (initial)** | All planned `docs/` files + `.cursor/agent.md` |
-| Root README | **Aligned** | Lumora source-of-truth; Nest boilerplate removed |
-| NestJS scaffold | **Schema foundation done** | Mongoose models + GraphQL types/inputs declared; auth/orchestration pending |
-| FastAPI AI service | Not started in this repo snapshot | Sibling repo `lumora-ai` |
-| Next.js frontend | Not in this backend-only hosting state | Sibling repo `lumora-frontend` |
-| MVP end-to-end demo | Not started | Blocked on auth + AI + frontend scan |
+| Root README | **Aligned** | Lumora source-of-truth |
+| NestJS backend | **Auth + analyzeFace + history** | T-101…T-108 done in this repo |
+| FastAPI AI service | Sibling `lumora-ai` still needed for non-mock | `AI_MOCK=true` unblocks Nest local demos |
+| Next.js frontend | Not in this repo | Sibling `lumora-frontend` |
+| MVP end-to-end demo | Partial | Backend path ready; needs real AI + frontend scan |
 
-**Overall phase:** Phase 1 (MVP Engineering) — backend schema complete; next is Auth (T-101).
+**Overall phase:** Phase 1 (MVP Engineering) — NestJS orchestration ready; next is `lumora-ai` (T-120+) and frontend scan (T-140+).
 
 ---
 
 ## 3. Completed
 
+### 2026-07-22 — analyzeFace orchestration (T-104 / T-105 / T-106 / T-107)
+
+- Added `AiService` FastAPI client (`POST /v1/analyze/face`, `X-API-KEY` in prod, timeouts)
+- Added `AI_MOCK` path for local development without `lumora-ai`
+- Implemented `analyzeFace`: validate landmarks → pending analysis → AI → succeed/fail → hair recommendation
+- Implemented `recommendationHistory` + `recommendation` (cursor pagination, owner-scoped / no IDOR leak)
+- Mapped AI failures to safe GraphQL errors (`AI_UNAVAILABLE`, `INVALID_LANDMARKS`)
+
+### 2026-07-21 — Auth + VerificationService (T-101)
+
+- Email/password + Google JWT auth, signup OTP, password recovery, shared verification challenges
+
 ### 2026-07-20 — Backend schema foundation
 
-- Added Mongoose models: `users`, `face_analyses`, `recommendations` (indexes + embedded provider/items)
-- Declared GraphQL enums/types/inputs matching `API.md` (code-first under `src/schema/`)
-- Wired `ConfigModule`, `MongooseModule`, `GraphQLModule` (Apollo) in `AppModule`
-- Added `.env.example` with `MONGODB_URI` and future auth/AI placeholders
-- Documented implementation mapping in `DATABASE.md` §10 and `API.md` §9
-- Added dedicated `docs/ER_MODELING.md` (ER diagram + relationships + entity tables)
-- Stub Query/Mutation resolvers throw until T-101 / T-105 / T-106
+- Mongoose models + GraphQL types/inputs; ER modeling docs
 
-### 2026-07-19 — Documentation foundation
+### 2026-07-19 — Documentation foundation + MVP ADR freeze
 
-- Replaced outdated root `README.md` with Lumora platform/backend entrypoint
-- Created full `docs/` suite + `.cursor/agent.md`
-- Recorded initial ADRs (identity, architecture boundaries, MVP scope)
-
-### 2026-07-19 — Product decisions closed (user answers)
-
-Initial ADR-009…ADR-020 draft recorded from first answers.
-
-### 2026-07-19 — Final MVP ADR freeze
-
-User finalized MVP decisions. Docs updated to:
-
-- Auth: **Email/Password + Google only** (Phone & Kakao out of MVP)
-- JWT Bearer
-- Landmarks-only JSON (no face image)
-- Face shape catalog confirmed
-- Hybrid hair recs + **static JSON** catalog
-- Men-only; web + mobile web; `en`/`ko`/`uz`
-- No Redis/BullMQ in MVP (future queues OK)
-- Multi-repo: `lumora-backend`, `lumora-frontend`, `lumora-ai` (monorepo not used)
-- NestJS↔FastAPI: private network; **prod adds `X-API-KEY`**
-- Retain until **account deletion**
+- Full `docs/` suite; auth/landmarks/hair/catalog/multi-repo decisions locked
 
 ---
 
@@ -71,7 +56,7 @@ User finalized MVP decisions. Docs updated to:
 
 | Item | Owner | Notes |
 |---|---|---|
-| T-101 Auth module | Backend | Next engineering milestone after schema |
+| T-120 FastAPI skeleton | AI repo | Required for non-mock analyze |
 
 ---
 
@@ -91,9 +76,9 @@ User finalized MVP decisions. Docs updated to:
 
 | Milestone | Exit signal |
 |---|---|
-| M1 — Auth works | Register/login + protected GraphQL |
-| M2 — AI stub/real analyze endpoint | `POST /v1/analyze/face` returns contract-shaped JSON |
-| M3 — Orchestration | NestJS `analyzeFace` calls AI and persists history |
+| M1 — Auth works | ✅ Register/login + protected GraphQL |
+| M2 — AI stub/real analyze endpoint | `POST /v1/analyze/face` in `lumora-ai` |
+| M3 — Orchestration | ✅ NestJS `analyzeFace` calls AI and persists history |
 | M4 — Scan UX | Guided scan + MediaPipe + GraphQL submit |
 | M5 — MVP demo | Full checklist in [MVP.md](./MVP.md) Section 4 |
 
@@ -114,4 +99,4 @@ User finalized MVP decisions. Docs updated to:
 
 ## 8. Summary
 
-Documentation Phase 0 is complete. Backend **schema foundation** (T-102, T-103, T-108) is in place. Next meaningful progress entries should reflect **auth (T-101)**, then AI contract + NestJS orchestration, then frontend scan integration.
+NestJS Phase 1 core path is implemented: auth, FastAPI client, `analyzeFace` persistence, and recommendation history. Remaining MVP work is primarily **`lumora-ai` (T-120+)** and **frontend scan/auth UI (T-140+)**.

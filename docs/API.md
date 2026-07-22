@@ -308,7 +308,10 @@ Code-first GraphQL types live under `src/schema/`. A reference SDL snapshot is k
 | Enums (`FaceShape`, `RecommendationCategory`, `VerificationChannel`, `VerificationPurpose`) | `src/common/enums/`, `src/verification/` |
 | Auth + user types | `src/schema/types/`, `src/auth/` |
 | Shared OTP | `src/verification/verification.service.ts` |
-| Module wiring | `AppModule` + `AuthModule` + `VerificationModule` |
+| Module wiring | `AppModule` + `AuthModule` + `VerificationModule` + `AiModule` + analysis modules |
+| AI client | `src/ai/ai.service.ts` |
+| `analyzeFace` orchestration | `src/face-analyses/analyze-face.service.ts` |
+| History | `src/recommendations/recommendations.service.ts` |
 
 ### Auth & verification operations
 
@@ -318,8 +321,10 @@ Code-first GraphQL types live under `src/schema/`. A reference SDL snapshot is k
 | `login` / `loginWithGoogle` / `logout` / `me` | Mixed | Implemented |
 | `forgotPassword` / `verifyPasswordResetOtp` / `resetPassword` | Public | Implemented (ADR-024) |
 | `requestAccountVerification` / `confirmAccountVerification` | Required | Implemented (OTP only; payment/2FA/delete side-effects later) |
-| `recommendationHistory` / `recommendation` | Required | Stub (T-106) |
-| `analyzeFace` | Required | Stub (T-105) |
+| `recommendationHistory` / `recommendation` | Required | Implemented (T-106; cursor pagination; owner-scoped) |
+| `analyzeFace` | Required | Implemented (T-104/T-105/T-107; FastAPI client + persistence) |
+
+Internal AI client: `src/ai/AiService` → `POST {AI_BASE_URL}/v1/analyze/face` with optional `X-API-KEY`. Set `AI_MOCK=true` to exercise orchestration without `lumora-ai`.
 
 HTTP `GET /health` remains available for process liveness (non-GraphQL).
 

@@ -114,7 +114,7 @@ input LoginInput {
 }
 
 type Mutation {
-  """Submit landmarks, orchestrate AI, persist history. Implementation: T-105."""
+  """Submit landmarks, call FastAPI AI, persist analysis + hair recommendation."""
   analyzeFace(input: AnalyzeFaceInput!): FaceAnalysisResult!
 
   """Confirm signup OTP and receive JWT."""
@@ -165,10 +165,10 @@ type Query {
   """Current authenticated user."""
   me: User!
 
-  """Single recommendation owned by the current user. Implementation: T-106."""
+  """Single recommendation owned by the current user. Returns null if missing or not owned."""
   recommendation(id: String!): Recommendation
 
-  """Paginated recommendation history for the current user. Implementation: T-106."""
+  """Paginated recommendation history for the current user."""
   recommendationHistory(cursor: String, limit: Int = 20): RecommendationConnection!
 }
 
