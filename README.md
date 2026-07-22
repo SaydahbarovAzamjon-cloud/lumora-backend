@@ -172,28 +172,36 @@ npm run start:dev
 
 ### Environment
 
-Create a `.env` file in the repository root. At minimum for local backend work:
+Copy [`.env.example`](./.env.example) to `.env` and fill in values:
 
 ```env
-PORT=4000
-MONGODB_URI=
-JWT_SECRET=
+PORT=3000
+MONGODB_URI=mongodb://127.0.0.1:27017/lumora
+JWT_SECRET=change-me-to-a-long-random-secret
+JWT_ACCESS_EXPIRES_IN=7d
+GOOGLE_CLIENT_ID=
+CORS_ORIGINS=http://localhost:3001
 ```
 
-Additional environment variables for AI service URLs, auth providers, and deployment will be documented in [`docs/`](./docs/) as those decisions are recorded.
+GraphQL endpoint: `http://localhost:3000/graphql` · Health: `GET /health`
+
+Auth mutations: `register`, `login`, `loginWithGoogle`. Protected: `me`, `logout` (Bearer JWT).
+
+Generated GraphQL SDL is committed at [`src/schema.gql`](./src/schema.gql) (NestJS `autoSchemaFile`) so the public contract is reviewable without running the app. Do not gitignore it; regenerate by starting the API when schema classes change.
 
 ---
 
 ## Project Status
 
-Documentation is being established **before** full implementation. Product and architecture decisions are recorded in `docs/`; do not treat older README drafts or StyleAI brainstorming as authoritative when they conflict with Lumora docs.
+Phase 0 docs are complete. Phase 1 engineering is underway (auth shipped). Product decisions live in `docs/`.
 
 | Area | Status |
 |---|---|
-| Product definition | In progress (`docs/`) |
+| Product definition | Complete (`docs/`) |
 | NestJS project scaffold | Present |
-| MVP feature implementation | Not complete |
-| FastAPI AI service | Separate service; not in this README’s runtime steps |
+| Auth (email/password + Google + JWT) | Done |
+| MVP feature implementation | In progress |
+| FastAPI AI service | Sibling `lumora-ai` |
 
 ---
 

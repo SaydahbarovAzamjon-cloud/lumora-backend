@@ -19,12 +19,13 @@ Track what has been completed, what is in progress, and what is blocked. Update 
 |---|---|---|
 | Product documentation set | **Complete (initial)** | All planned `docs/` files + `.cursor/agent.md` |
 | Root README | **Aligned** | Lumora source-of-truth; Nest boilerplate removed |
-| NestJS scaffold | Present | Feature modules for MVP not complete |
-| FastAPI AI service | Not started in this repo snapshot | Planned as `apps/ai` |
-| Next.js frontend | Not in this backend-only hosting state | Planned as `apps/web` |
-| MVP end-to-end demo | Not started | Blocked on implementation + open decisions |
+| NestJS scaffold | Present | Auth module shipped; analysis/history next |
+| Auth (email/password + Google + JWT) | **Done (T-101)** | GraphQL `register` / `login` / `loginWithGoogle` / `me` / `logout` |
+| FastAPI AI service | Not started in this repo snapshot | Sibling `lumora-ai` |
+| Next.js frontend | Not in this backend-only hosting state | Sibling `lumora-frontend` |
+| MVP end-to-end demo | Not started | Auth ready; analyze pipeline remaining |
 
-**Overall phase:** Phase 0 (Documentation) complete → Phase 1 (MVP Engineering) ready to start.
+**Overall phase:** Phase 1 (MVP Engineering) in progress — auth complete; next is analysis schema + AI orchestration.
 
 ---
 
@@ -72,13 +73,22 @@ User finalized MVP decisions. Docs updated to:
 - Shared OTP for payment + password reset; password policy + session kill
 - Opens: OPEN-021 (Google-only reset UX), OPEN-022 (admin Telegram ops)
 
+### 2026-07-21 — Auth module (T-101)
+
+- Completed: NestJS GraphQL auth — `register`, `login`, `loginWithGoogle`, `me`, `logout`
+- JWT Bearer guard (`GqlAuthGuard`); MongoDB `users` collection; bcrypt password hashes
+- Google via ID-token verify (`GOOGLE_CLIENT_ID`); account linking by email
+- Access-token-only for now (`refreshToken: null`); OPEN-014 still open
+- Completed: `.env.example` (T-108); users Mongo model (T-103a)
+- Tests: unit covers register/login/`me` + Google happy/fail paths; e2e covers health, register, happy login, `me`, rejected login
+
 ---
 
 ## 4. In Progress
 
 | Item | Owner | Notes |
 |---|---|---|
-| — | — | Ready for Phase 1 engineering |
+| T-102 / T-103b | — | GraphQL + Mongo models for analysis/history (`users` already done as T-103a) |
 
 ---
 
@@ -121,4 +131,4 @@ User finalized MVP decisions. Docs updated to:
 
 ## 8. Summary
 
-Documentation Phase 0 is complete. Engineering Phase 1 has not started. The next meaningful progress entries should reflect auth, AI contract, orchestration, and frontend scan integration — not new out-of-scope features.
+Phase 1 auth is in place. Next progress should cover analysis/history GraphQL + Mongo models, FastAPI client/orchestration, and the AI analyze contract — not Phase 2b monetization.

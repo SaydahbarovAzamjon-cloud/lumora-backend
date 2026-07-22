@@ -103,8 +103,24 @@ When changing contracts or boundaries, update the matching docs in the same chan
 | API contracts | `API.md`, `AI.md` |
 | Data model | `DATABASE.md` |
 | Delivery status | `TASKS.md`, `PROGRESS.md` |
+| New module / deploy-ready phase | `docs/learning/*.md` (Uzbek system-design learning docs) |
 
 Do not write application features while leaving architecture docs knowingly wrong.
+
+### Uzbek learning docs (mandatory with each phase)
+
+Technical `docs/*.md` stay **English**. Personal learning docs live in `docs/learning/` and are **Uzbek**.
+
+When implementing a new module or finishing a deploy-ready phase, add/update the matching learning file in this order inside each file:
+
+1. Why this module exists
+2. What problem it solves
+3. Workflow
+4. Controller / Resolver / Service
+5. Important methods / code
+6. Summary
+
+Keep `docs/learning/README.md` reading order updated. Technical English docs and Uzbek learning docs are both required; do not skip learning docs when shipping a phase.
 
 ---
 

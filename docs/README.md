@@ -43,6 +43,7 @@ Agent rules: [`../.cursor/agent.md`](../.cursor/agent.md)
 | [DECISIONS.md](./DECISIONS.md) | ADR log + open questions |
 | [TASKS.md](./TASKS.md) | Execution backlog |
 | [PROGRESS.md](./PROGRESS.md) | Milestone log |
+| [learning/](./learning/) | **Uzbek** system-design learning docs (auth, users, …) |
 
 ---
 

@@ -94,7 +94,7 @@ Supports MVP auth (ADR-009): email/password and Google OAuth only.
 | Field | Type (logical) | Required | Notes |
 |---|---|---|---|
 | `_id` | ObjectId | Yes | Primary key |
-| `email` | string | Conditional | Required for email/password; typically present for Google users |
+| `email` | string | Yes (MVP) | Required for all accounts in MVP (email/password + Google verified email). Nest schema enforces unique + required. |
 | `passwordHash` | string | Conditional | Only for email/password users; never plaintext |
 | `providers` | array\<object\> | Yes | Linked identities, e.g. `{ type: "google", subject: "..." }` |
 | `displayName` | string | No | Optional profile label |
@@ -115,7 +115,7 @@ Supports MVP auth (ADR-009): email/password and Google OAuth only.
 
 | Index | Fields | Reason |
 |---|---|---|
-| Unique sparse | `email` | Email login |
+| Unique | `email` | Email login (required in MVP; not sparse) |
 | Unique compound | `providers.type` + `providers.subject` | Google account linking |
 | | `createdAt` | Ops / support queries |
 | | `plan` | Post-MVP entitlement queries |

@@ -152,7 +152,7 @@ type Query {
 |---|---|---|
 | `register` | Public | Create account |
 | `login` | Public | Obtain tokens / session |
-| `logout` | Required | Invalidate session/refresh if applicable |
+| `logout` | Required | MVP: client must discard the access token (server returns `true`). Server-side revoke/refresh invalidation awaits OPEN-014. |
 | `analyzeFace` | Required | Submit landmarks/scan payload; run AI; persist; return result |
 
 Logical signatures:
@@ -171,9 +171,12 @@ input AnalyzeFaceInput {
 type Mutation {
   register(input: RegisterInput!): AuthPayload!
   login(input: LoginInput!): AuthPayload!
+  loginWithGoogle(input: GoogleLoginInput!): AuthPayload!
   logout: Boolean!
   analyzeFace(input: AnalyzeFaceInput!): FaceAnalysisResult!
 }
+
+# GoogleLoginInput { idToken: String! } — frontend Google ID token; NestJS verifies.
 ```
 
 ### 3.6 `analyzeFace` behavior contract
