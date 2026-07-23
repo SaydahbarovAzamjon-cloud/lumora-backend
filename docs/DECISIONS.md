@@ -299,6 +299,72 @@ Future versions may add time-based retention policies.
 
 ---
 
+### ADR-022 — NestJS persists with Mongoose
+
+| Field | Value |
+|---|---|
+| Status | Accepted |
+| Date | 2026-07-20 |
+| Closes | DATABASE.md open item on Mongoose vs native driver |
+
+**Decision:** NestJS uses **Mongoose** (`@nestjs/mongoose`) for MVP MongoDB models (`users`, `face_analyses`, `recommendations`).
+
+**Consequences:**
+
+- Schema classes live under `src/**/schemas/`
+- Indexes for email/providers and `userId`+`createdAt` history paths are declared on schemas
+- `refresh_tokens` remains optional until OPEN-014
+
+---
+
+### ADR-023 — Email signup requires confirmation code
+
+| Field | Value |
+|---|---|
+| Status | Accepted |
+| Date | 2026-07-20 |
+
+**Decision:** Email/password signup must verify ownership of the email before JWT is issued.
+
+| Step | Behavior |
+|---|---|
+| `register` | Create (or refresh) unverified user; email a **6-digit** code (TTL 15 min); **no** access token |
+| `confirmEmail` | Validate code → mark `emailVerified` → return `AuthPayload` (JWT) |
+| `resendVerificationCode` | Resend code for unverified accounts |
+| `login` | Reject if email not verified |
+| Google OAuth | Treated as verified (Google already verified the email) |
+
+Codes are issued by the shared **VerificationService** (ADR-024): 6-digit OTP, **2 minute** TTL, max 5 attempts, one active challenge per purpose.
+
+---
+
+### ADR-024 — Shared VerificationService + password recovery
+
+| Field | Value |
+|---|---|
+| Status | Accepted |
+| Date | 2026-07-21 |
+
+**Decision:** Lumora uses one **VerificationService** for OTP challenges across features (signup, forgot password, and future payment / sensitive actions). Password recovery reuses that infrastructure.
+
+| Rule | Value |
+|---|---|
+| OTP | Random 6-digit |
+| TTL | 2 minutes |
+| Max attempts | 5 |
+| Active OTP | One per user + purpose; resend invalidates previous |
+| Channel | Resolved from auth provider (MVP: Email / Google → email destination) |
+| Password policy | min 8, upper, lower, number, special char |
+| After reset | bump `tokenVersion` (invalidate JWTs), set `passwordChangedAt`, admin Telegram notify |
+
+**GraphQL:** `forgotPassword` → `verifyPasswordResetOtp` → `resetPassword`.
+
+**Storage:** `verification_challenges` collection (no Redis in MVP).
+
+**Future channels:** Telegram / SMS / Kakao reserved in channel map; not MVP login providers (ADR-009).
+
+---
+
 ## 3. Open Decisions (Remaining)
 
 | ID | Topic | Why it matters |

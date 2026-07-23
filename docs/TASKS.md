@@ -47,14 +47,14 @@ Executable backlog for Lumora. Tasks are grouped by phase and surface. This is a
 | ID | Task | Status | Depends on |
 |---|---|---|---|
 | T-100 | Auth approach decided (email/password + Google + JWT Bearer) | done | ADR-009, ADR-010 |
-| T-101 | Implement auth module (email/password + Google + JWT Bearer guards) | todo | T-100 |
-| T-102 | Define GraphQL schema for user/analysis/history | todo | T-100, OPEN-004 |
-| T-103 | Implement MongoDB models for users/analyses/recommendations | todo | DATABASE.md |
-| T-104 | Implement FastAPI client in NestJS (`X-API-KEY` in production) | todo | ADR-019 |
-| T-105 | Implement `analyzeFace` orchestration + persistence | todo | T-102, T-103, T-104, T-120 |
-| T-106 | Implement recommendation history queries | todo | T-103, T-105 |
-| T-107 | Map AI/upstream errors to safe GraphQL errors | todo | T-105 |
-| T-108 | Add `.env.example` for API | todo | |
+| T-101 | Implement auth module (email/password + Google + JWT Bearer guards) | done | OTP signup + password recovery |
+| T-102 | Define GraphQL schema for user/analysis/history | done | T-100; OPEN-004 provisional inputs |
+| T-103 | Implement MongoDB models for users/analyses/recommendations | done | DATABASE.md; NestJS+Mongoose |
+| T-104 | Implement FastAPI client in NestJS (`X-API-KEY` in production) | done | `AiService`; `AI_MOCK` for local |
+| T-105 | Implement `analyzeFace` orchestration + persistence | done | Works with live AI or `AI_MOCK`; full e2e still needs T-120 |
+| T-106 | Implement recommendation history queries | done | Cursor pagination; owner-scoped |
+| T-107 | Map AI/upstream errors to safe GraphQL errors | done | `AnalyzeFaceErrors` |
+| T-108 | Add `.env.example` for API | done | Includes AI_* vars |
 
 ### 3.2 AI (`apps/ai` / FastAPI)
 
@@ -116,4 +116,4 @@ Do not pull these into Phase 1 unless scope is explicitly changed via ADR:
 
 ## 6. Summary
 
-Phase 0 documentation tasks are complete. Phase 1 implementation starts with auth decisions, FastAPI analyze contract, NestJS orchestration, MediaPipe scan UX, and history — in that architectural spirit.
+Phase 0 documentation tasks are complete. Phase 1 NestJS path (auth, AI client, `analyzeFace`, history) is implemented. Remaining MVP work is primarily FastAPI (`T-120+`) and frontend scan/auth UI (`T-140+`).

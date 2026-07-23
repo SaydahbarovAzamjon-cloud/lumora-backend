@@ -1,0 +1,233 @@
+{
+  "info": {
+    "_postman_id": "lumora-backend-mvp-graphql",
+    "name": "Lumora Backend — GraphQL MVP",
+    "description": "Local Postman flow for NestJS GraphQL:\n1) register → 2) confirmEmail (OTP from server logs) → 3) me → 4) analyzeFace → 5) recommendationHistory.\n\nBase URL default: {{baseUrl}}/graphql\nSet AI_MOCK=true in backend .env for analyzeFace without lumora-ai.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "email", "value": "tester@example.com" },
+    { "key": "password", "value": "Abcdef1!" },
+    { "key": "displayName", "value": "Tester" },
+    { "key": "otpCode", "value": "" },
+    { "key": "accessToken", "value": "" },
+    { "key": "recommendationId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "0. Health (REST)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/health",
+        "description": "Process liveness. Not GraphQL."
+      }
+    },
+    {
+      "name": "1. register",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('register returns verificationRequired', function () {",
+              "  const json = pm.response.json();",
+              "  pm.expect(json.data.register.verificationRequired).to.eql(true);",
+              "});",
+              "",
+              "console.log('OTP is logged on the NestJS server console (SMTP unset). Copy it into otpCode.');"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "mutation Register($input: RegisterInput!) {\n  register(input: $input) {\n    email\n    verificationRequired\n    message\n    channel\n    maskedDestination\n    expiresInSeconds\n  }\n}",
+            "variables": "{\n  \"input\": {\n    \"email\": \"{{email}}\",\n    \"password\": \"{{password}}\",\n    \"displayName\": \"{{displayName}}\"\n  }\n}"
+          }
+        },
+        "url": "{{baseUrl}}/graphql",
+        "description": "Creates unverified user and issues 6-digit OTP (2 min TTL).\nWithout SMTP, code is printed in Nest logs as:\n[DEV] ... code for tester@example.com: 123456"
+      }
+    },
+    {
+      "name": "2. confirmEmail",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const json = pm.response.json();",
+              "pm.test('confirmEmail returns accessToken', function () {",
+              "  pm.expect(json.data.confirmEmail.accessToken).to.be.a('string');",
+              "});",
+              "if (json.data && json.data.confirmEmail && json.data.confirmEmail.accessToken) {",
+              "  pm.collectionVariables.set('accessToken', json.data.confirmEmail.accessToken);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "mutation ConfirmEmail($input: ConfirmEmailInput!) {\n  confirmEmail(input: $input) {\n    accessToken\n    user {\n      id\n      email\n      displayName\n      createdAt\n    }\n  }\n}",
+            "variables": "{\n  \"input\": {\n    \"email\": \"{{email}}\",\n    \"code\": \"{{otpCode}}\"\n  }\n}"
+          }
+        },
+        "url": "{{baseUrl}}/graphql",
+        "description": "Set collection variable otpCode from server logs, then send.\nSaves accessToken automatically on success."
+      }
+    },
+    {
+      "name": "3. login (optional later)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const json = pm.response.json();",
+              "if (json.data && json.data.login && json.data.login.accessToken) {",
+              "  pm.collectionVariables.set('accessToken', json.data.login.accessToken);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "mutation Login($input: LoginInput!) {\n  login(input: $input) {\n    accessToken\n    user { id email displayName }\n  }\n}",
+            "variables": "{\n  \"input\": {\n    \"email\": \"{{email}}\",\n    \"password\": \"{{password}}\"\n  }\n}"
+          }
+        },
+        "url": "{{baseUrl}}/graphql",
+        "description": "Use after email is verified. Overwrites accessToken."
+      }
+    },
+    {
+      "name": "4. me",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+        },
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "query Me {\n  me {\n    id\n    email\n    displayName\n    createdAt\n  }\n}",
+            "variables": "{}"
+          }
+        },
+        "url": "{{baseUrl}}/graphql"
+      }
+    },
+    {
+      "name": "5. analyzeFace",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const json = pm.response.json();",
+              "pm.test('analyzeFace returns faceShape + items', function () {",
+              "  pm.expect(json.data.analyzeFace.faceShape).to.be.a('string');",
+              "  pm.expect(json.data.analyzeFace.recommendations.items.length).to.be.above(0);",
+              "});",
+              "if (json.data && json.data.analyzeFace && json.data.analyzeFace.recommendations) {",
+              "  pm.collectionVariables.set('recommendationId', json.data.analyzeFace.recommendations.id);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+        },
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "mutation AnalyzeFace($input: AnalyzeFaceInput!) {\n  analyzeFace(input: $input) {\n    id\n    faceShape\n    recommendations {\n      id\n      category\n      faceShape\n      createdAt\n      faceAnalysisId\n      items {\n        key\n        title\n        description\n        score\n      }\n    }\n  }\n}",
+            "variables": "{\n  \"input\": {\n    \"landmarks\": {\n      \"points\": [\n        { \"x\": 0.12, \"y\": 0.34, \"z\": 0.01, \"index\": 0 },\n        { \"x\": 0.22, \"y\": 0.44, \"z\": 0.02, \"index\": 1 },\n        { \"x\": 0.32, \"y\": 0.54, \"z\": 0.03, \"index\": 2 }\n      ],\n      \"meta\": {\n        \"source\": \"mediapipe\",\n        \"version\": \"postman-mock\"\n      }\n    }\n  }\n}"
+          }
+        },
+        "url": "{{baseUrl}}/graphql",
+        "description": "Requires Bearer JWT.\nBackend needs AI_MOCK=true OR a running lumora-ai at AI_BASE_URL."
+      }
+    },
+    {
+      "name": "6. recommendationHistory",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+        },
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "query History($limit: Int, $cursor: String) {\n  recommendationHistory(limit: $limit, cursor: $cursor) {\n    nextCursor\n    nodes {\n      id\n      category\n      faceShape\n      createdAt\n      faceAnalysisId\n      items { key title score }\n    }\n  }\n}",
+            "variables": "{\n  \"limit\": 20,\n  \"cursor\": null\n}"
+          }
+        },
+        "url": "{{baseUrl}}/graphql"
+      }
+    },
+    {
+      "name": "7. recommendation by id",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+        },
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "graphql",
+          "graphql": {
+            "query": "query One($id: String!) {\n  recommendation(id: $id) {\n    id\n    category\n    faceShape\n    createdAt\n    items { key title description score }\n  }\n}",
+            "variables": "{\n  \"id\": \"{{recommendationId}}\"\n}"
+          }
+        },
+        "url": "{{baseUrl}}/graphql",
+        "description": "Uses recommendationId saved from analyzeFace."
+      }
+    }
+  ]
+}
